@@ -102,7 +102,7 @@ section { padding: 96px 0; }
   gap: 10px;
 }
 
-.nav-logo img { height: 34px; width: auto; }
+.nav-logo img { height: 40px; width: auto; }
 
 .nav-links {
   display: flex;
