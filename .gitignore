@@ -1,0 +1,6 @@
+# 系统垃圾文件，不进仓库
+.DS_Store
+Thumbs.db
+
+# 以后如果引入前端工具链，依赖目录不进仓库
+node_modules/
