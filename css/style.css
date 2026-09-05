@@ -538,3 +538,109 @@ html[lang="en"] .hero-eyebrow { font-size: 20px; letter-spacing: .18em; }
   color: var(--ink-soft);
   writing-mode: vertical-rl;
 }
+
+/* ---------- 子页面 ---------- */
+.page-banner {
+  position: relative;
+  color: #fff;
+  padding: 104px 0 64px;
+  background:
+    radial-gradient(900px 400px at 85% 0%, rgba(30, 134, 217, .35), transparent 60%),
+    linear-gradient(150deg, var(--blue-950) 0%, var(--blue-800) 100%);
+  overflow: hidden;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: rgba(255, 255, 255, .6);
+  margin-bottom: 16px;
+}
+
+.breadcrumb a:hover { color: #fff; }
+
+.page-banner h1 {
+  font-size: clamp(30px, 4.5vw, 48px);
+  letter-spacing: .02em;
+}
+
+.page-banner .banner-sub {
+  color: var(--blue-300);
+  letter-spacing: .22em;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-top: 12px;
+}
+
+.prose h3 {
+  font-size: 22px;
+  margin: 44px 0 14px;
+}
+
+.prose p {
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+  max-width: 860px;
+}
+
+.prose ul {
+  color: var(--ink-soft);
+  margin: 0 0 16px 1.2em;
+  list-style: disc;
+  max-width: 860px;
+}
+
+.prose li { margin-bottom: 8px; }
+
+/* 发展历程时间线 */
+.timeline {
+  margin-top: 44px;
+  border-left: 2px solid var(--line);
+  padding-left: 30px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 36px;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -37px;
+  top: 7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--blue-600);
+  box-shadow: 0 0 0 4px var(--blue-100);
+}
+
+.timeline-year {
+  font-weight: 700;
+  color: var(--blue-700);
+  font-size: 18px;
+}
+
+.timeline-item p {
+  color: var(--ink-soft);
+  margin-top: 6px;
+  max-width: 760px;
+}
+
+/* 首页"了解更多"入口 */
+.more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  color: var(--blue-600);
+  font-size: 15px;
+  font-weight: 600;
+  transition: gap .2s;
+}
+
+.more-link:hover { gap: 12px; }
+
+.projects .more-link { color: var(--blue-300); }
