@@ -164,7 +164,7 @@ section { padding: 96px 0; }
 .hero-bg {
   position: absolute;
   inset: -12% 0;
-  background: url("../images/hero-bg.png") right center / cover no-repeat;
+  background: url("../images/hero-bg.jpg") right center / cover no-repeat;
   will-change: transform;
   z-index: 0;
 }
