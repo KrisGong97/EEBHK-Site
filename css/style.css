@@ -465,3 +465,76 @@ html[lang="en"] .hero-eyebrow { font-size: 20px; letter-spacing: .18em; }
   .hero-eyebrow, .hero h1, .hero-sub, .hero-cta { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* ---------- 板块钉住叙事（桌面端 + GSAP 就绪时由 JS 加 .pin-active） ---------- */
+.pin-progress { display: none; }
+
+@media (min-width: 901px) {
+  .pin-active { min-height: calc(100vh - 64px); }
+
+  .pin-active .pin-body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 56px;
+    align-items: center;
+    margin-top: 40px;
+  }
+
+  .pin-active .pin-progress { display: block; }
+
+  .pin-active .cards {
+    display: block;
+    position: relative;
+    height: 400px;
+    margin-top: 0;
+  }
+
+  .pin-active .card {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* 钉住模式下卡片由 GSAP 控制位移，关闭悬停上浮 */
+  .pin-active .card:hover { transform: none; box-shadow: var(--shadow-md); border-color: var(--blue-300); }
+}
+
+.pin-count .pin-current {
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--blue-700);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.pin-count .pin-total {
+  font-size: 20px;
+  color: var(--ink-soft);
+  margin-left: 10px;
+}
+
+.pin-bar {
+  margin-top: 20px;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pin-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--blue-600);
+}
+
+.pin-hint {
+  margin-top: 20px;
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+  writing-mode: vertical-rl;
+}

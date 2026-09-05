@@ -61,7 +61,13 @@
       <p class="section-eyebrow" data-reveal>Our Business</p>
       <h2 class="section-title" data-reveal>Business Segments</h2>
       <p class="section-lead" data-reveal>From high-speed rail to urban transit, from system integration to industrial manufacturing — a full rail transit value chain.</p>
-      <div class="cards" data-reveal-stagger>
+      <div class="pin-body">
+        <div class="pin-progress" aria-hidden="true">
+          <div class="pin-count"><span class="pin-current">01</span><span class="pin-total">/ 04</span></div>
+          <div class="pin-bar"><span></span></div>
+          <p class="pin-hint">KEEP SCROLLING</p>
+        </div>
+        <div class="cards" data-reveal-stagger>
         <div class="card">
           <div class="card-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21h16M6 21V8l6-4 6 4v13M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg>
@@ -89,6 +95,7 @@
           </div>
           <h3>O&amp;M Services</h3>
           <p>Full life-cycle operation, maintenance and management of rail transit facilities for long-term safety and reliability.</p>
+        </div>
         </div>
       </div>
     </div>
@@ -162,6 +169,8 @@
     </div>
   </footer>
 
+  <script src="../js/vendor/gsap.min.js"></script>
+  <script src="../js/vendor/ScrollTrigger.min.js"></script>
   <script src="../js/vendor/lenis.min.js"></script>
   <script src="../js/anim.js"></script>
   <script src="../js/main.js"></script>
