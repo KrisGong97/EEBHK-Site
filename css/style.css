@@ -27,7 +27,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/* 平滑滚动由 Lenis 接管（js/anim.js），此处不再用原生 smooth 避免冲突 */
 
 body {
   font-family: var(--font-en), var(--font-zh);
@@ -157,12 +157,33 @@ section { padding: 96px 0; }
   align-items: center;
   color: #fff;
   overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(4, 31, 61, .88) 0%, rgba(4, 31, 61, .55) 40%, rgba(4, 31, 61, .08) 68%, rgba(4, 31, 61, 0) 100%),
-    url("../images/hero-bg.png") right center / cover no-repeat var(--blue-950);
+  background: var(--blue-950);
 }
 
-.hero-inner { position: relative; z-index: 1; }
+/* 背景图独立成层并外扩出血，供视差滚动做 transform */
+.hero-bg {
+  position: absolute;
+  inset: -12% 0;
+  background: url("../images/hero-bg.png") right center / cover no-repeat;
+  will-change: transform;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4, 31, 61, .88) 0%, rgba(4, 31, 61, .55) 40%, rgba(4, 31, 61, .08) 68%, rgba(4, 31, 61, 0) 100%);
+  z-index: 1;
+}
+
+/* 首屏文字贴左，避免宽屏下左侧大片空白 */
+.hero .wrap { max-width: none; }
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  padding-left: clamp(0px, 5vw, 96px);
+}
 
 .hero-eyebrow {
     font-size: 32px;
@@ -372,11 +393,9 @@ section { padding: 96px 0; }
 @media (max-width: 900px) {
   section { padding: 72px 0; }
 
-  .hero {
-    background:
-      linear-gradient(rgba(4, 31, 61, .78), rgba(4, 31, 61, .62)),
-      url("../images/hero-bg.png") center / cover no-repeat var(--blue-950);
-  }
+  .hero-bg { background-position: center; inset: 0; }
+
+  .hero-overlay { background: linear-gradient(rgba(4, 31, 61, .78), rgba(4, 31, 61, .62)); }
 
   .nav-toggle { display: block; }
 
@@ -407,4 +426,42 @@ section { padding: 96px 0; }
   .contact-grid { grid-template-columns: 1fr; }
 
   .news-item { flex-direction: column; gap: 6px; }
+}
+
+/* ---------- Phase 3 动效 ---------- */
+
+/* 首屏入场：依次浮现 */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow, .hero h1, .hero-sub, .hero-cta {
+  animation: heroFadeUp .9s cubic-bezier(.22, .61, .36, 1) both;
+}
+
+.hero-eyebrow { animation-delay: .1s; }
+.hero h1 { animation-delay: .28s; }
+.hero-sub { animation-delay: .5s; }
+.hero-cta { animation-delay: .72s; }
+
+/* 英文版公司名较长，缩小 eyebrow 字号防止溢出 */
+html[lang="en"] .hero-eyebrow { font-size: 20px; letter-spacing: .18em; }
+
+/* 滚动渐显：JS 给元素加 .reveal，进入视口加 .revealed，结束后移除类还原交互过渡 */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .8s cubic-bezier(.22, .61, .36, 1), transform .8s cubic-bezier(.22, .61, .36, 1);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 系统偏好"减少动态效果"时：全部动画关闭，内容直接可见 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-eyebrow, .hero h1, .hero-sub, .hero-cta { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
