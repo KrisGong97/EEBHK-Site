@@ -1,0 +1,42 @@
+{
+  "contact": {
+    "addressLabel": {
+      "zh": "地址",
+      "en": "ADDRESS"
+    },
+    "addressLabelFull": {
+      "zh": "公司地址",
+      "en": "ADDRESS"
+    },
+    "region": {
+      "zh": "香港特別行政區",
+      "en": "Tsuen Wan, Hong Kong SAR"
+    },
+    "address": {
+      "zh": "香港荃灣區海盛路 TML 廣場 29F",
+      "en": "29F, TML Plaza, Hoi Shing Road, Tsuen Wan, Hong Kong"
+    },
+    "businessLabel": {
+      "zh": "商務合作",
+      "en": "BUSINESS"
+    },
+    "businessEmail": "info@eebhk.com",
+    "businessNote": {
+      "zh": "郵箱地址待確認",
+      "en": "Email address to be confirmed"
+    },
+    "careersLabel": {
+      "zh": "人才招聘",
+      "en": "CAREERS"
+    },
+    "careersEmail": "hr@eebhk.com",
+    "careersNote": {
+      "zh": "郵箱地址待確認",
+      "en": "Email address to be confirmed"
+    },
+    "intro": {
+      "zh": "歡迎就軌道交通供電、機電工程及月台幕門系統等業務與我們聯繫，我們將盡快回覆。",
+      "en": "For enquiries on rail power supply, E&M works and platform screen door systems, please contact us — we will respond as soon as possible."
+    }
+  }
+}

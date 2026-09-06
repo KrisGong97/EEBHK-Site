@@ -1,0 +1,32 @@
+{
+  "note": {
+    "zh": "（以上為示例新聞，正式新聞稿待公司提供後替換；後續可擴展為帶詳情頁的新聞列表。）",
+    "en": "(The items above are samples and will be replaced with official press releases; the list can later be extended with article detail pages.)"
+  },
+  "items": [
+    {
+      "id": "2026-08-29-tung-chung",
+      "date": "2026-08-29",
+      "title": {
+        "zh": "港鐵東涌綫延綫等七個新鐵路項目全速推展，公司參建工程穩步推進",
+        "en": "Seven new MTR railway projects advance at full speed, with the Company's works progressing steadily"
+      }
+    },
+    {
+      "id": "2026-04-28-kwu-tung",
+      "date": "2026-04-28",
+      "title": {
+        "zh": "東鐵綫古洞站接通永久電力，機電安裝及系統測試全面展開",
+        "en": "Permanent power energised at East Rail Line Kwu Tung Station as E&M installation and testing begin"
+      }
+    },
+    {
+      "id": "2026-03-17-three-line",
+      "date": "2026-03-17",
+      "title": {
+        "zh": "港鐵「三綫」供電系統改造工程有序實施，全力保障營運線路安全",
+        "en": "MTR three-line power supply renewal proceeds in good order, safeguarding live-line operations"
+      }
+    }
+  ]
+}
