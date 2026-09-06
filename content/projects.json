@@ -5,6 +5,30 @@
   },
   "items": [
     {
+      "id": "highrailwayM1156",
+      "featured": true,
+      "tag": {
+        "zh": "廣深港高鐵香港段路軌與接觸網維護M1156",
+        "en": "Hong Kong High-Speed Rail Maintenance M1156-17C Project"
+      },
+      "title": {
+        "zh": "香港高鐵維管M1156-17C項目",
+        "en": "Hong Kong High-Speed Rail Maintenance M1156-17C Project"
+      },
+      "summary": {
+        "zh": "本項目為電氣化局與中鐵一局聯合體於2018年3月14日獲得中標通知書，業主為香港鐵路有限公司，合約主要範圍為廣深港高鐵香港段路軌與接觸網維護。包含正線26公里的接觸網及172個人防門。",
+        "en": "This project was awarded by the Electrification Bureau and China Railway First Bureau consortium on March 14, 2018. The owner is MTR Corporation Limited, and the contract mainly covers the maintenance of tracks and overhead wires on the Hong Kong section of the Guangzhou-Shenzhen-Hong Kong High-Speed Rail. This includes 26 kilometers of main line overhead and 172 personal security gates."
+      },
+      "image": "",
+      "blocks": [
+        {
+          "type": "text",
+          "zh": "一、項目建設基本概況\n（一）工程概況\n本項目為電氣化局與中鐵一局聯合體於2018年3月14日獲得中標通知書，業主為香港鐵路有限公司，合約主要範圍為廣深港高鐵香港段路軌與接觸網維護。包含正線26公里的接觸網及172個人防門。\n（二）合同價款及各專業本月施工產值完成情況\n合同金額為5860萬港幣。專案於2021年9月，與業主續期三年。\n本月產值完成情況:\n接觸網專業：109萬人民幣（匯率0.82）\n開累完成工作量6357萬港幣。\n（三）工期目標\n開工日期2018年4月1日，合同計畫竣工日期2021年9月30日。續期合同工期為2021年9月-2024年9月，共36個月。\n",
+          "en": "1. Basic Overview of Project Construction\n(1) Project Overview\nThis project was awarded by the Electrification Bureau and China Railway First Bureau consortium on March 14, 2018. The owner is MTR Corporation Limited, and the contract mainly covers the maintenance of tracks and overhead wires on the Hong Kong section of the Guangzhou-Shenzhen-Hong Kong High-Speed Rail. This includes 26 kilometers of main line overhead and 172 personal security gates. \n(2) Contract price and the completion status of construction output for each specialty this month\nThe contract amount is HKD 58.6 million. The project was renewed for three years with the owner in September 2021. \nThis month's output completion status: \nContact Network Major: 1.09 million RMB (exchange rate 0.82)\nThe total work completed was 63.57 million HKD. \nConstruction Schedule Targets\nConstruction start date is April 1, 2018, and the contract completion date is planned for September 30, 2021. The renewal contract period is from September 2021 to September 2024, totaling 36 months. \n2. Project progress and overall construction node planning arrangements\n1. Catenary specialty\nConstruction Progress: \nThis month, the overhead contact patrols mainly focused on defect measurement, overhead inspection on foot, and static measurements of the overhead wires in the inspection data and reports of the Guangzhou-Shenzhen MTR (Hong Kong section); Engineering vehicles made 15 trips, focusing on section insulator inspection, switch inspection, joint inspection, electrical connection inspection, and problem database problem-solving. Six overhead inspections were conducted, and four walks were carried out on foot for tunnel connection door CPD equipment. \nOn-site installation and commissioning of Shigang 5C equipment have been completed. All 5C data is now available on the website, with no data integrity. You can log in to check the results. From the debugging results, due to the installation position being somewhat at the center of the track track, the imaging quality was not ideal. Minor adjustments are needed later. We have completed the adjustment plan, mainly including profile tilt, individual camera connection issues, radar speed measurement module optimization, and on-site network problems. On May 9, 2022, we assisted the manufacturer with adjustments. On-site installation and commissioning of West Kowloon 6C equipment are complete. Pending subsequent signal reception and debugging, 3C equipment installation is finished. The onboard equipment of 0256 is running normally. We perform weekly maintenance. Server terminal issues require the manufacturer to come to Hong Kong to resolve them. All temporary monitoring is done by replacing hard drives to view video contacts. 4C equipment has been assisted by the manufacturer and is installing 4C equipment on the EAW01X vehicle. The control room equipment for 3C and 4C West Kowloon stations has arrived in Hong Kong. The equipment for 2C-6C station buildings needs to be addressed. MTR has already provided station buildings, and servers and other equipment have been moved into the rooms, and are waiting for domestic manufacturers to come to Hong Kong to install equipment. \nCurrently, three more tunnel leaks affecting the overhead wire have been found, and six tunnels affecting CPD equipment are being communicated with the MTR to repair the leaks as soon as possible. For all locations where water is no longer leaking, we will carry out cleaning of the contact networks, mainly focusing on the bearing cables and contact wires. Whether the contact cables are affected will continue to communicate with the MTR maintenance team. \n\n3. Main Problems, Causes, and Countermeasures During Construction\nThe main issues currently found; None\n4. Labor and machinery allocation and demand plans\nCurrently, there are 5 management staff and 28 construction workers on duty; \nCurrently 4 command and work-delivery vehicles; 1 emergency rescue passenger/cargo van (purchased on 2018.8.18); 1 constant tension catapult (CDW) (provided by MTR); 2 overhead operation vehicles OIV (provided by MTR); 1 flatbed truck (provided by MTR). \nNo demand plans yet. \n"
+        }
+      ]
+    },
+    {
       "id": "mtr-three-line",
       "featured": true,
       "tag": {
