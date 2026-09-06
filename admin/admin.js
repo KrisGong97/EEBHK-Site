@@ -362,20 +362,22 @@
     setStatus(status, '正在保存…');
 
     if (!newsFile.data.items) newsFile.data.items = [];
-    if (editingId) {
-      newsFile.data.items = newsFile.data.items.map(function (x) {
-        return x.id === editingId ? item : x;
-      });
-    } else {
-      if (newsFile.data.items.some(function (x) { return x.id === item.id; })) {
-        setStatus(status, '编号 id 已存在，请换一个。', 'err');
-        btn.disabled = false;
-        return;
+    var items = newsFile.data.items;
+    var idx = -1;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].id === item.id || (editingId && items[i].id === editingId)) {
+        idx = i;
+        break;
       }
-      newsFile.data.items.unshift(item);
     }
+    var isUpdate = idx >= 0;
+    if (isUpdate) items[idx] = item;
+    else items.unshift(item);
+    editingId = item.id;
+    $('f-id').value = item.id;
+    $('f-id').disabled = true;
 
-    saveFile('content/news.json', newsFile, editingId ? '更新新闻：' + item.id : '新增新闻：' + item.id).then(function () {
+    saveFile('content/news.json', newsFile, isUpdate ? '更新新闻：' + item.id : '新增新闻：' + item.id).then(function () {
       setStatus(status, '已保存。约 30 秒后刷新网站即可看到更新。', 'ok');
       renderNewsList();
     }).catch(function (err) {
