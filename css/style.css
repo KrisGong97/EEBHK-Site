@@ -172,7 +172,7 @@ section { padding: 96px 0; }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(4, 31, 61, .88) 0%, rgba(4, 31, 61, .55) 40%, rgba(4, 31, 61, .08) 68%, rgba(4, 31, 61, 0) 100%);
+  background: linear-gradient(90deg, rgba(4, 31, 61, .88) 0%, rgba(4, 31, 61, .55) 36%, rgba(4, 31, 61, .08) 62%, rgba(4, 31, 61, 0) 78%);
   z-index: 1;
 }
 
@@ -182,7 +182,8 @@ section { padding: 96px 0; }
 .hero-inner {
   position: relative;
   z-index: 2;
-  padding-left: clamp(0px, 5vw, 96px);
+  padding-left: clamp(0px, 2vw, 40px);
+  max-width: 640px;
 }
 
 .hero-eyebrow {
