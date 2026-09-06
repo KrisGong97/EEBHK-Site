@@ -1,7 +1,7 @@
 {
   "note": {
-    "zh": "（以上為示例新聞，正式新聞稿待公司提供後替換；後續可擴展為帶詳情頁的新聞列表。）",
-    "en": "(The items above are samples and will be replaced with official press releases; the list can later be extended with article detail pages.)"
+    "zh": "點擊標題閱讀全文。正式新聞稿可由後台隨時增補或替換。",
+    "en": "Click a headline to read the full article. Official releases can be added or replaced from the admin panel at any time."
   },
   "items": [
     {
@@ -10,7 +10,17 @@
       "title": {
         "zh": "港鐵東涌綫延綫等七個新鐵路項目全速推展，公司參建工程穩步推進",
         "en": "Seven new MTR railway projects advance at full speed, with the Company's works progressing steadily"
-      }
+      },
+      "summary": {
+        "zh": "東涌綫延綫、屯門南延綫及古洞站等項目同步推進，公司參建的供電與機電工程按節點實施。",
+        "en": "Works on the Tung Chung Line Extension, Tuen Mun South Extension and Kwu Tung Station continue in parallel, with the Company's power supply and E&M packages progressing to programme."
+      },
+      "body": {
+        "zh": "香港多個新鐵路項目正全速推展，為長遠城市發展提供交通基建支撐。其中包括北環綫主綫、東涌綫延綫、屯門南延綫等在建工程，均按計劃取得進展。\n\n東涌綫延綫方面，東涌東站已完成平頂，連接出入口的天橋建造工程亦已完成，車站正全面展開機電工程。東涌西段隧道貫通後，內部基建及路軌鋪設正加快推進。\n\n屯門南延綫將屯馬綫由屯門站向南延伸，沿屯門河建造高架橋，相關車站結構與地基工程同步進行。公司作為供電及機電專業的參與單位，正配合各標段節點，穩步推進現場安裝與接口協調。\n\n上述進展進一步鞏固公司在港鐵新線建設中的專業角色，也為後續北都區及其他骨幹項目積累實施經驗。",
+        "en": "Several new railway projects in Hong Kong are advancing at full speed, providing the transport infrastructure needed for long-term urban development. These include the Northern Link main line, the Tung Chung Line Extension and the Tuen Mun South Extension, all of which are progressing to plan.\n\nOn the Tung Chung Line Extension, Tung Chung East Station has topped out and the footbridges linking the entrances have been completed. E&M installation is now under way across the station. Following the tunnel breakthrough on the Tung Chung West section, internal civil works and track laying are being accelerated.\n\nThe Tuen Mun South Extension will take the Tuen Ma Line south from Tuen Mun Station on a viaduct along the Tuen Mun River, with station structure and foundation works proceeding in parallel. As a specialist in power supply and E&M, the Company is coordinating interfaces and installation to the programme milestones of each package.\n\nThese works further consolidate the Company's role on MTR new-line construction and build experience for subsequent projects in the Northern Metropolis and other strategic corridors."
+      },
+      "image": "images/hero-bg.jpg",
+      "video": ""
     },
     {
       "id": "2026-04-28-kwu-tung",
@@ -18,7 +28,17 @@
       "title": {
         "zh": "東鐵綫古洞站接通永久電力，機電安裝及系統測試全面展開",
         "en": "Permanent power energised at East Rail Line Kwu Tung Station as E&M installation and testing begin"
-      }
+      },
+      "summary": {
+        "zh": "古洞站土木結構大致完成，永久電力已接通，扶手電梯安裝及列車訊號動態測試同步展開。",
+        "en": "Civil structure at Kwu Tung Station is largely complete. Permanent power has been energised, with escalator installation and dynamic signalling tests under way."
+      },
+      "body": {
+        "zh": "北環綫項目的東鐵綫古洞站工程取得重要進展。該站是港鐵首個在營運中鐵路隧道正上方興建的車站，土木結構目前已大致完成，團隊正全力推進車站機電及室內裝備工程。\n\n站內已完成多組扶手電梯安裝，連接入口、大堂及月台。車站永久電力已經接通，列車訊號系統的動態測試亦已順利展開。\n\n古洞站位處未來古洞北新發展區的市中心，目標於 2027 年投入服務，屆時將成為港鐵網絡中第 100 個車站及區內公共交通樞紐。公司將繼續配合開站前的系統整合測試與驗證工作，確保供電及機電系統安全可靠。",
+        "en": "The East Rail Line Kwu Tung Station, part of the Northern Link project, has reached an important milestone. It is MTR's first station built directly above an operating railway tunnel. The civil structure is now largely complete, and the team is pressing ahead with E&M and interior fit-out.\n\nMultiple banks of escalators have been installed, linking the entrance, concourse and platforms. Permanent station power has been energised, and dynamic testing of the train signalling system has begun.\n\nLocated at the heart of the future Kwu Tung North New Development Area, the station is targeted to open in 2027 as the 100th station on the MTR network and a local public transport hub. The Company will continue to support pre-opening system integration tests and verification, to ensure that power supply and E&M systems are safe and reliable."
+      },
+      "image": "",
+      "video": ""
     },
     {
       "id": "2026-03-17-three-line",
@@ -26,7 +46,17 @@
       "title": {
         "zh": "港鐵「三綫」供電系統改造工程有序實施，全力保障營運線路安全",
         "en": "MTR three-line power supply renewal proceeds in good order, safeguarding live-line operations"
-      }
+      },
+      "summary": {
+        "zh": "荃灣綫、觀塘綫及港島綫供電更新覆蓋 49 公里、39 個車站，須在夜間窗口於營運綫路上施工。",
+        "en": "Power supply renewal on the Tsuen Wan, Kwun Tong and Island lines covers 49 km and 39 stations, and must be delivered in night-time possessions on operating lines."
+      },
+      "body": {
+        "zh": "由中鐵電氣化局牽頭的聯營體承建港鐵荃灣綫、觀塘綫及港島綫供電系統改造工程，合約額 30.32 億港元，工期跨越數年，至 2028 年底。\n\n這三條綫路是香港首期建成的地鐵，也是市區網絡的重要組成部分，日運量約佔港鐵一半。改造範圍包括 49 公里、39 個車站的高低壓供電系統更新，涵蓋設計、供貨、安裝與測試。\n\n由於綫路每天營運超過 19 小時，施工必須在有限的夜間窗口完成，並與既有營運、其他專業承包商緊密接口。項目難度與工期在港鐵供電改造中均屬少見，公司正按英標體系與現場安全規定有序推進，全力保障營運線路安全。",
+        "en": "A joint venture led by China Railway Electrification Engineering Group is delivering the power supply renewal on MTR's Tsuen Wan, Kwun Tong and Island lines. The contract is valued at HKD 3.032 billion, with works running through to the end of 2028.\n\nThese three lines formed the first phase of Hong Kong's metro and remain a core part of the urban network, carrying about half of MTR's daily ridership. The scope covers renewal of high- and low-voltage power supply systems across 49 km and 39 stations, including design, supply, installation and testing.\n\nWith the lines in passenger service for more than 19 hours a day, construction must be completed in limited night-time possessions and closely interfaced with operations and other specialist contractors. Both the technical difficulty and the duration are exceptional for MTR power supply renewal. The Company is proceeding in an orderly manner under British Standards and site safety rules, with the safety of the operating railway as the first priority."
+      },
+      "image": "",
+      "video": ""
     }
   ]
 }

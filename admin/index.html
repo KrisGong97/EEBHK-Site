@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>EEBHK 内容后台</title>
+  <link rel="icon" href="../images/logo.png">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="top">
+    <strong>EEBHK 内容后台</strong>
+    <a href="../index.html">返回网站</a>
+  </header>
+
+  <main class="wrap">
+    <section id="login-view" class="card">
+      <h1>登录</h1>
+      <p class="lead">用 GitHub 个人访问令牌登录后，即可在网页里新建、修改、保存新闻和联系方式。保存会写入仓库并自动部署。</p>
+      <div class="help">
+        1. 打开
+        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">创建 Fine-grained Token</a><br>
+        2. Resource owner 选你的账号，Repository 只勾选 <strong>EEBHK-Site</strong><br>
+        3. Permissions → Contents 选 <strong>Read and write</strong>，生成后粘贴到下方<br>
+        令牌只存在本机浏览器，关闭标签页即清除。请不要发给他人。
+      </div>
+      <label for="token">GitHub Token</label>
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
+      <div class="row">
+        <button class="btn" id="login-btn" type="button">登录</button>
+      </div>
+      <p class="status" id="login-status"></p>
+    </section>
+
+    <section id="app-view" class="hidden">
+      <div class="tabs">
+        <button class="btn btn-ghost" data-tab="news" aria-selected="true" type="button">新闻中心</button>
+        <button class="btn btn-ghost" data-tab="site" type="button">联系方式</button>
+        <button class="btn btn-ghost" id="logout-btn" type="button">退出</button>
+      </div>
+
+      <section id="news-list-view" class="card">
+        <h2>新闻列表</h2>
+        <div class="row">
+          <button class="btn" id="new-news" type="button">新建新闻</button>
+        </div>
+        <div id="news-list"></div>
+      </section>
+
+      <section id="news-form-view" class="card hidden">
+        <h2 id="news-form-title">编辑新闻</h2>
+        <label>编号 id（英文短横线，保存后用于网址）</label>
+        <input id="f-id" type="text" placeholder="2026-09-06-example">
+        <label>日期</label>
+        <input id="f-date" type="date">
+        <div class="grid-2">
+          <div>
+            <label>标题（繁体中文）</label>
+            <input id="f-title-zh" type="text">
+          </div>
+          <div>
+            <label>Title (English)</label>
+            <input id="f-title-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>摘要（繁中）</label>
+            <textarea id="f-summary-zh"></textarea>
+          </div>
+          <div>
+            <label>Summary (EN)</label>
+            <textarea id="f-summary-en"></textarea>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>正文（繁中，空一行分段）</label>
+            <textarea id="f-body-zh" style="min-height:200px"></textarea>
+          </div>
+          <div>
+            <label>Body (EN, blank line = new paragraph)</label>
+            <textarea id="f-body-en" style="min-height:200px"></textarea>
+          </div>
+        </div>
+        <label>配图（可上传，或填写网站内路径 / 外链）</label>
+        <input id="f-image" type="text" placeholder="images/news/xxx.jpg">
+        <input id="f-image-file" type="file" accept="image/*">
+        <label>视频链接（YouTube / 哔哩哔哩 / mp4，可留空）</label>
+        <input id="f-video" type="url" placeholder="https://www.youtube.com/watch?v=…">
+        <div class="row">
+          <button class="btn" id="save-news" type="button">保存并发布</button>
+          <button class="btn btn-ghost" id="cancel-news" type="button">返回列表</button>
+        </div>
+        <p class="status" id="news-status"></p>
+      </section>
+
+      <section id="site-view" class="card hidden">
+        <h2>联系方式</h2>
+        <div class="grid-2">
+          <div>
+            <label>地址（繁中）</label>
+            <input id="s-address-zh" type="text">
+          </div>
+          <div>
+            <label>Address (EN)</label>
+            <input id="s-address-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>地区（繁中，首页用）</label>
+            <input id="s-region-zh" type="text">
+          </div>
+          <div>
+            <label>Region (EN)</label>
+            <input id="s-region-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>商务邮箱</label>
+            <input id="s-biz-email" type="text">
+          </div>
+          <div>
+            <label>招聘邮箱</label>
+            <input id="s-hr-email" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>商务备注（繁中）</label>
+            <input id="s-biz-note-zh" type="text">
+          </div>
+          <div>
+            <label>Business note (EN)</label>
+            <input id="s-biz-note-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>招聘备注（繁中）</label>
+            <input id="s-hr-note-zh" type="text">
+          </div>
+          <div>
+            <label>Careers note (EN)</label>
+            <input id="s-hr-note-en" type="text">
+          </div>
+        </div>
+        <label>联系页说明（繁中）</label>
+        <textarea id="s-intro-zh"></textarea>
+        <label>Contact intro (EN)</label>
+        <textarea id="s-intro-en"></textarea>
+        <div class="row">
+          <button class="btn" id="save-site" type="button">保存并发布</button>
+        </div>
+        <p class="status" id="site-status"></p>
+      </section>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

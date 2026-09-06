@@ -1,11 +1,12 @@
-// Phase 6：从 content/*.json 填充新闻列表与联系方式
+// Phase 6：从 content/*.json 填充新闻列表、详情与联系方式
 // JSON 加载失败时保留页面里的静态兜底内容
 (function () {
   var lang = document.documentElement.lang.toLowerCase().indexOf('en') === 0 ? 'en' : 'zh';
   var other = lang === 'en' ? 'zh' : 'en';
-  var base = /(?:^|\/)en(?:\/|$)/.test(location.pathname.replace(/\\/g, '/'))
-    ? '../content/'
-    : 'content/';
+  var path = location.pathname.replace(/\\/g, '/');
+  var inEn = /(?:^|\/)en(?:\/|$)/.test(path);
+  var base = inEn ? '../content/' : 'content/';
+  var root = inEn ? '../' : '';
 
   function pick(obj) {
     if (obj == null) return '';
@@ -18,6 +19,64 @@
       if (!res.ok) throw new Error(String(res.status));
       return res.json();
     });
+  }
+
+  function assetUrl(src) {
+    if (!src) return '';
+    if (/^https?:\/\//i.test(src)) return src;
+    return root + src.replace(/^\//, '');
+  }
+
+  function youtubeId(url) {
+    var m = String(url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
+
+  function biliId(url) {
+    var m = String(url || '').match(/bilibili\.com\/video\/(BV[\w]+)/i);
+    return m ? m[1] : '';
+  }
+
+  function renderVideo(box, url) {
+    if (!box || !url) return;
+    var yt = youtubeId(url);
+    var bv = biliId(url);
+    var wrap = document.createElement('div');
+    wrap.className = 'article-video';
+    if (yt) {
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + yt;
+      iframe.title = 'YouTube';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      wrap.appendChild(iframe);
+      box.appendChild(wrap);
+      return;
+    }
+    if (bv) {
+      var iframeB = document.createElement('iframe');
+      iframeB.src = 'https://player.bilibili.com/player.html?bvid=' + encodeURIComponent(bv) + '&high_quality=1';
+      iframeB.title = 'Bilibili';
+      iframeB.allowFullscreen = true;
+      wrap.appendChild(iframeB);
+      box.appendChild(wrap);
+      return;
+    }
+    if (/\.(mp4|webm|ogg)(\?|$)/i.test(url)) {
+      var video = document.createElement('video');
+      video.controls = true;
+      video.src = assetUrl(url);
+      wrap.appendChild(video);
+      box.appendChild(wrap);
+      return;
+    }
+    var link = document.createElement('a');
+    link.className = 'more-link';
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = lang === 'en' ? 'Watch video →' : '觀看影片 →';
+    box.appendChild(link);
   }
 
   function card(title, line, muted) {
@@ -46,13 +105,12 @@
       });
       var limit = parseInt(newsBox.getAttribute('data-news-limit'), 10);
       if (limit > 0) items = items.slice(0, limit);
-      var href = newsBox.getAttribute('data-news-href') || 'news.html';
 
       newsBox.innerHTML = '';
       items.forEach(function (item) {
         var a = document.createElement('a');
         a.className = 'news-item';
-        a.href = href;
+        a.href = 'news-detail.html?id=' + encodeURIComponent(item.id || '');
         var date = document.createElement('span');
         date.className = 'news-date';
         date.textContent = item.date || '';
@@ -66,6 +124,70 @@
       var note = document.querySelector('[data-news-note]');
       if (note && data.note) note.textContent = pick(data.note);
     }).catch(function () { /* 保留 HTML 兜底 */ });
+  }
+
+  var article = document.querySelector('[data-news-article]');
+  if (article) {
+    var id = new URLSearchParams(location.search).get('id') || '';
+    var langLink = document.querySelector('[data-article-lang]');
+    if (langLink && id) {
+      var langHref = inEn ? '../news-detail.html?id=' : 'en/news-detail.html?id=';
+      langLink.setAttribute('href', langHref + encodeURIComponent(id));
+    }
+
+    fetchJson('news.json').then(function (data) {
+      var item = (data.items || []).filter(function (x) { return x.id === id; })[0];
+      var titleEl = document.querySelector('[data-article-title]');
+      var dateEl = document.querySelector('[data-article-date]');
+      var crumbEl = document.querySelector('[data-article-crumb]');
+      var bodyEl = document.querySelector('[data-article-body]');
+      var imageEl = document.querySelector('[data-article-image]');
+      var videoEl = document.querySelector('[data-article-video]');
+      var notFound = lang === 'en' ? 'Article not found.' : '找不到這則新聞。';
+
+      if (!item) {
+        if (titleEl) titleEl.textContent = notFound;
+        if (bodyEl) {
+          bodyEl.textContent = '';
+          var p = document.createElement('p');
+          p.textContent = notFound;
+          bodyEl.appendChild(p);
+        }
+        document.title = notFound;
+        return;
+      }
+
+      var title = pick(item.title);
+      document.title = title + (lang === 'en'
+        ? ' — EEBHK'
+        : ' — 中鐵電氣化局集團（香港）有限公司');
+      if (titleEl) titleEl.textContent = title;
+      if (crumbEl) crumbEl.textContent = title;
+      if (dateEl) dateEl.textContent = item.date || '';
+      if (imageEl) {
+        if (item.image) {
+          imageEl.src = assetUrl(item.image);
+          imageEl.alt = title;
+          imageEl.hidden = false;
+        } else {
+          imageEl.hidden = true;
+        }
+      }
+      if (bodyEl) {
+        bodyEl.textContent = '';
+        String(pick(item.body) || pick(item.summary) || '').split(/\n{2,}/).forEach(function (para) {
+          var text = para.replace(/\s+/g, ' ').trim();
+          if (!text) return;
+          var p = document.createElement('p');
+          p.textContent = text;
+          bodyEl.appendChild(p);
+        });
+      }
+      if (videoEl) renderVideo(videoEl, item.video || '');
+    }).catch(function () {
+      var titleEl = document.querySelector('[data-article-title]');
+      if (titleEl) titleEl.textContent = lang === 'en' ? 'Failed to load article.' : '新聞載入失敗。';
+    });
   }
 
   var contactBox = document.querySelector('[data-contact-cards]');
