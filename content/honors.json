@@ -1,3 +1,22 @@
 {
-  "items": []
+  "items": [
+    {
+      "id": "qulitifyexample",
+      "year": "2026",
+      "kind": "qualification",
+      "name": {
+        "zh": "資質案例名稱",
+        "en": ""
+      },
+      "issuer": {
+        "zh": "辦法機構名稱",
+        "en": ""
+      },
+      "note": {
+        "zh": "資質說明12333333",
+        "en": ""
+      },
+      "image": "uploads/honors/1788689302785-example-Qualification_certificate.png"
+    }
+  ]
 }
