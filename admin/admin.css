@@ -46,6 +46,7 @@ h2 { font-size: 18px; margin-bottom: 16px; }
 .lead { color: var(--muted); margin-bottom: 20px; font-size: 14px; }
 
 label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+select,
 input[type="text"], input[type="date"], input[type="url"], input[type="password"], textarea {
   width: 100%;
   border: 1px solid var(--line);

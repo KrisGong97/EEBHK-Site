@@ -36,6 +36,7 @@
     <section id="app-view" class="hidden">
       <div class="tabs">
         <button class="btn btn-ghost" data-tab="news" aria-selected="true" type="button">新闻中心</button>
+        <button class="btn btn-ghost" data-tab="honors" type="button">资质荣誉</button>
         <button class="btn btn-ghost" data-tab="site" type="button">联系方式</button>
         <button class="btn btn-ghost" id="logout-btn" type="button">退出</button>
       </div>
@@ -101,6 +102,66 @@
           <button class="btn btn-ghost" id="cancel-news" type="button">返回列表</button>
         </div>
         <p class="status" id="news-status"></p>
+      </section>
+
+      <section id="honor-list-view" class="card hidden">
+        <h2>资质与荣誉</h2>
+        <p class="help">新增资质证书或奖项后，上传证书/奖状照片即可出现在「关于我们」页面。</p>
+        <div class="row">
+          <button class="btn" id="new-honor" type="button">新增资质 / 荣誉</button>
+        </div>
+        <div id="honor-list"></div>
+      </section>
+
+      <section id="honor-form-view" class="card hidden">
+        <h2 id="honor-form-title">新增资质 / 荣誉</h2>
+        <label>编号 id（保存后用于识别，请勿随意改）</label>
+        <input id="h-id" type="text" placeholder="2025-safety-gold">
+        <div class="grid-2">
+          <div>
+            <label>类型</label>
+            <select id="h-kind">
+              <option value="qualification">资质</option>
+              <option value="honor">荣誉 / 奖项</option>
+            </select>
+          </div>
+          <div>
+            <label>年份</label>
+            <input id="h-year" type="text" placeholder="2025">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>名称（繁中）</label>
+            <input id="h-name-zh" type="text">
+          </div>
+          <div>
+            <label>Name (EN)</label>
+            <input id="h-name-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>颁发机构（繁中）</label>
+            <input id="h-issuer-zh" type="text">
+          </div>
+          <div>
+            <label>Issuer (EN)</label>
+            <input id="h-issuer-en" type="text">
+          </div>
+        </div>
+        <label>说明（繁中，可留空）</label>
+        <textarea id="h-note-zh"></textarea>
+        <label>Note (EN, optional)</label>
+        <textarea id="h-note-en"></textarea>
+        <label>证书 / 奖状照片（jpg / png / webp）</label>
+        <input id="h-image" type="text" placeholder="uploads/honors/xxx.jpg">
+        <input id="h-image-file" type="file" accept="image/jpeg,image/png,image/webp">
+        <div class="row">
+          <button class="btn" id="save-honor" type="button">保存并发布</button>
+          <button class="btn btn-ghost" id="cancel-honor" type="button">返回列表</button>
+        </div>
+        <p class="status" id="honor-status"></p>
       </section>
 
       <section id="site-view" class="card hidden">

@@ -6,7 +6,9 @@
   var token = '';
   var newsFile = { sha: '', data: { note: { zh: '', en: '' }, items: [] } };
   var siteFile = { sha: '', data: { contact: {} } };
+  var honorsFile = { sha: '', data: { items: [] } };
   var editingId = null;
+  var editingHonorId = null;
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -73,9 +75,9 @@
     return s || 'news';
   }
 
-  function uploadImage(file) {
+  function uploadImage(file, folder) {
     var safe = String(file.name || 'image.jpg').replace(/[^A-Za-z0-9._-]/g, '_');
-    var dest = 'uploads/news/' + Date.now() + '-' + safe;
+    var dest = (folder || 'uploads/news/') + Date.now() + '-' + safe;
     return new Promise(function (resolve, reject) {
       var reader = new FileReader();
       reader.onerror = reject;
@@ -85,7 +87,7 @@
           method: 'PUT',
           headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),
           body: JSON.stringify({
-            message: '上传新闻配图 ' + safe,
+            message: '上传图片 ' + safe,
             content: b64,
             branch: BRANCH
           })
@@ -96,7 +98,7 @@
   }
 
   function show(id) {
-    ['news-list-view', 'news-form-view', 'site-view'].forEach(function (name) {
+    ['news-list-view', 'news-form-view', 'honor-list-view', 'honor-form-view', 'site-view'].forEach(function (name) {
       $(name).classList.toggle('hidden', name !== id);
     });
   }
@@ -436,10 +438,152 @@
     });
   }
 
+  function renderHonorList() {
+    var box = $('honor-list');
+    box.innerHTML = '';
+    var items = (honorsFile.data.items || []).slice().sort(function (a, b) {
+      return String(b.year || '').localeCompare(String(a.year || ''));
+    });
+    if (!items.length) {
+      box.textContent = '还没有资质或荣誉。点击上方按钮新增。';
+      return;
+    }
+    items.forEach(function (item) {
+      var row = document.createElement('div');
+      row.className = 'news-row';
+      var left = document.createElement('div');
+      var title = document.createElement('div');
+      title.textContent = (item.name && item.name.zh) || item.id;
+      var meta = document.createElement('small');
+      var kindLabel = item.kind === 'qualification' ? '资质' : '荣誉';
+      meta.textContent = (item.year || '') + '  ·  ' + kindLabel + '  ·  ' + item.id;
+      left.appendChild(title);
+      left.appendChild(meta);
+      var actions = document.createElement('div');
+      actions.className = 'row';
+      var edit = document.createElement('button');
+      edit.className = 'btn btn-ghost';
+      edit.type = 'button';
+      edit.textContent = '编辑';
+      edit.addEventListener('click', function () { openHonorForm(item.id); });
+      var del = document.createElement('button');
+      del.className = 'btn btn-danger';
+      del.type = 'button';
+      del.textContent = '删除';
+      del.addEventListener('click', function () { deleteHonor(item.id); });
+      actions.appendChild(edit);
+      actions.appendChild(del);
+      row.appendChild(left);
+      row.appendChild(actions);
+      box.appendChild(row);
+    });
+  }
+
+  function openHonorForm(id) {
+    var item = id
+      ? (honorsFile.data.items || []).filter(function (x) { return x.id === id; })[0]
+      : {
+        id: '',
+        year: String(new Date().getFullYear()),
+        kind: 'honor',
+        name: { zh: '', en: '' },
+        issuer: { zh: '', en: '' },
+        note: { zh: '', en: '' },
+        image: ''
+      };
+    if (!item) item = { id: '', year: '', kind: 'honor', name: { zh: '', en: '' }, issuer: { zh: '', en: '' }, note: { zh: '', en: '' }, image: '' };
+    editingHonorId = id || null;
+    $('honor-form-title').textContent = id ? '编辑资质 / 荣誉' : '新增资质 / 荣誉';
+    $('h-id').value = item.id || '';
+    $('h-id').disabled = !!id;
+    $('h-kind').value = item.kind === 'qualification' ? 'qualification' : 'honor';
+    $('h-year').value = item.year || '';
+    $('h-name-zh').value = (item.name && item.name.zh) || '';
+    $('h-name-en').value = (item.name && item.name.en) || '';
+    $('h-issuer-zh').value = (item.issuer && item.issuer.zh) || '';
+    $('h-issuer-en').value = (item.issuer && item.issuer.en) || '';
+    $('h-note-zh').value = (item.note && item.note.zh) || '';
+    $('h-note-en').value = (item.note && item.note.en) || '';
+    $('h-image').value = item.image || '';
+    $('h-image-file').value = '';
+    setStatus($('honor-status'), '');
+    show('honor-form-view');
+  }
+
+  function collectHonor() {
+    var year = $('h-year').value.trim();
+    var nameZh = $('h-name-zh').value.trim();
+    var id = $('h-id').value.trim() || ((year || 'item') + '-' + slugify($('h-name-en').value || nameZh));
+    return {
+      id: id,
+      year: year,
+      kind: $('h-kind').value,
+      name: { zh: nameZh, en: $('h-name-en').value.trim() },
+      issuer: { zh: $('h-issuer-zh').value.trim(), en: $('h-issuer-en').value.trim() },
+      note: { zh: $('h-note-zh').value.trim(), en: $('h-note-en').value.trim() },
+      image: $('h-image').value.trim()
+    };
+  }
+
+  function saveHonor() {
+    var btn = $('save-honor');
+    var status = $('honor-status');
+    var item = collectHonor();
+    if (!item.name.zh) {
+      setStatus(status, '请至少填写繁中名称。', 'err');
+      return;
+    }
+    var file = $('h-image-file').files[0];
+    if (file && (/\.gif$/i.test(file.name) || file.type === 'image/gif')) {
+      setStatus(status, '不采用动图，请上传 jpg / png / webp。', 'err');
+      return;
+    }
+    btn.disabled = true;
+    setStatus(status, '正在保存…');
+    var upload = file ? uploadImage(file, 'uploads/honors/') : Promise.resolve(item.image);
+    upload.then(function (imagePath) {
+      item.image = imagePath || item.image;
+      if (!honorsFile.data.items) honorsFile.data.items = [];
+      var items = honorsFile.data.items;
+      var idx = -1;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].id === item.id || (editingHonorId && items[i].id === editingHonorId)) {
+          idx = i;
+          break;
+        }
+      }
+      var isUpdate = idx >= 0;
+      if (isUpdate) items[idx] = item;
+      else items.unshift(item);
+      editingHonorId = item.id;
+      $('h-id').value = item.id;
+      $('h-id').disabled = true;
+      return saveFile('content/honors.json', honorsFile, isUpdate ? '更新资质荣誉：' + item.id : '新增资质荣誉：' + item.id);
+    }).then(function () {
+      setStatus(status, '已保存。约 30 秒后刷新「关于我们」即可看到。', 'ok');
+      renderHonorList();
+    }).catch(function (err) {
+      setStatus(status, '保存失败：' + err.message, 'err');
+    }).then(function () {
+      btn.disabled = false;
+    });
+  }
+
+  function deleteHonor(id) {
+    if (!confirm('确定删除这条资质 / 荣誉？删除后会立即写入仓库。')) return;
+    honorsFile.data.items = (honorsFile.data.items || []).filter(function (x) { return x.id !== id; });
+    saveFile('content/honors.json', honorsFile, '删除资质荣誉：' + id).then(function () {
+      renderHonorList();
+    }).catch(function (err) {
+      alert('删除失败：' + err.message);
+    });
+  }
+
   function afterLogin() {
     $('login-view').classList.add('hidden');
     $('app-view').classList.remove('hidden');
     renderNewsList();
+    renderHonorList();
     fillSite();
     show('news-list-view');
   }
@@ -453,7 +597,8 @@
     setStatus($('login-status'), '正在验证…');
     Promise.all([
       loadFile('content/news.json', newsFile),
-      loadFile('content/site.json', siteFile)
+      loadFile('content/site.json', siteFile),
+      loadFile('content/honors.json', honorsFile)
     ]).then(afterLogin).catch(function (err) {
       token = '';
       setStatus($('login-status'), '登录失败：' + err.message, 'err');
@@ -473,9 +618,13 @@
       document.querySelectorAll('[data-tab]').forEach(function (b) {
         b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
       });
-      if (btn.getAttribute('data-tab') === 'news') {
+      var tab = btn.getAttribute('data-tab');
+      if (tab === 'news') {
         renderNewsList();
         show('news-list-view');
+      } else if (tab === 'honors') {
+        renderHonorList();
+        show('honor-list-view');
       } else {
         fillSite();
         show('site-view');
@@ -487,6 +636,9 @@
   $('cancel-news').addEventListener('click', function () { show('news-list-view'); });
   $('save-news').addEventListener('click', saveNews);
   $('save-site').addEventListener('click', saveSite);
+  $('new-honor').addEventListener('click', function () { openHonorForm(null); });
+  $('cancel-honor').addEventListener('click', function () { show('honor-list-view'); });
+  $('save-honor').addEventListener('click', saveHonor);
 
   $('add-text-block').addEventListener('click', function () {
     syncBlocksFromDom();
