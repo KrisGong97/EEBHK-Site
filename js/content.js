@@ -143,6 +143,8 @@
       var bodyEl = document.querySelector('[data-article-body]');
       var imageEl = document.querySelector('[data-article-image]');
       var videoEl = document.querySelector('[data-article-video]');
+      var bylineEl = document.querySelector('[data-article-byline]');
+      var galleryEl = document.querySelector('[data-article-gallery]');
       var notFound = lang === 'en' ? 'Article not found.' : '找不到這則新聞。';
 
       if (!item) {
@@ -164,6 +166,14 @@
       if (titleEl) titleEl.textContent = title;
       if (crumbEl) crumbEl.textContent = title;
       if (dateEl) dateEl.textContent = item.date || '';
+      if (bylineEl) {
+        var bits = [];
+        if (item.editor) bits.push((lang === 'en' ? 'Editor: ' : '編輯：') + item.editor);
+        if (item.reviewer) bits.push((lang === 'en' ? 'Reviewed by: ' : '審核：') + item.reviewer);
+        if (item.source) bits.push((lang === 'en' ? 'Source: ' : '來源：') + item.source);
+        bylineEl.textContent = bits.join('  ·  ');
+        bylineEl.hidden = bits.length === 0;
+      }
       if (imageEl) {
         if (item.image) {
           imageEl.src = assetUrl(item.image);
@@ -184,6 +194,19 @@
         });
       }
       if (videoEl) renderVideo(videoEl, item.video || '');
+      if (galleryEl) {
+        galleryEl.textContent = '';
+        var extras = (item.images || []).filter(function (src) {
+          return src && src !== item.image && !/\.gif(\?|$)/i.test(src);
+        });
+        extras.forEach(function (src) {
+          var img = document.createElement('img');
+          img.src = assetUrl(src);
+          img.alt = title;
+          img.className = 'article-inline';
+          galleryEl.appendChild(img);
+        });
+      }
     }).catch(function () {
       var titleEl = document.querySelector('[data-article-title]');
       if (titleEl) titleEl.textContent = lang === 'en' ? 'Failed to load article.' : '新聞載入失敗。';

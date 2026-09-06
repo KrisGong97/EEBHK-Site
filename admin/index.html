@@ -89,6 +89,20 @@
         <input id="f-image-file" type="file" accept="image/*">
         <label>视频链接（YouTube / 哔哩哔哩 / mp4，可留空）</label>
         <input id="f-video" type="url" placeholder="https://www.youtube.com/watch?v=…">
+        <div class="grid-2">
+          <div>
+            <label>编辑</label>
+            <input id="f-editor" type="text">
+          </div>
+          <div>
+            <label>审核</label>
+            <input id="f-reviewer" type="text">
+          </div>
+        </div>
+        <label>来源（如公众号名称）</label>
+        <input id="f-source" type="text" placeholder="中铁电气化局国际工程公司">
+        <label>正文配图路径（每行一张，仅 jpg/png/webp）</label>
+        <textarea id="f-images" placeholder="uploads/news/xxx.jpg"></textarea>
         <div class="row">
           <button class="btn" id="save-news" type="button">保存并发布</button>
           <button class="btn btn-ghost" id="cancel-news" type="button">返回列表</button>

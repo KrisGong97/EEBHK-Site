@@ -1,0 +1,13 @@
+{
+  "source": "中铁电气化局国际工程公司",
+  "date": "2025-03-12",
+  "title": "香港公司示例标题（此文件不会被导入）",
+  "title_en": "Hong Kong sample title (this file is skipped)",
+  "editor": "张三",
+  "reviewer": "李四",
+  "body": "把正文粘在这里。空一行表示新段落。\n\n第二段。",
+  "body_en": "Paste the English body here if you have one.",
+  "images": [
+    "photos/cover.jpg"
+  ]
+}

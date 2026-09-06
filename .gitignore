@@ -4,3 +4,8 @@ Thumbs.db
 
 # 以后如果引入前端工具链，依赖目录不进仓库
 node_modules/
+
+# 本地待导入的公众号文稿与配图（模板 example.article.json 除外）
+content/import/*
+!content/import/example.article.json
+!content/import/.gitkeep
