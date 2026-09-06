@@ -17,7 +17,7 @@
   <main class="wrap">
     <section id="login-view" class="card">
       <h1>登录</h1>
-      <p class="lead">用 GitHub 个人访问令牌登录后，即可在网页里新建、修改、保存新闻和联系方式。保存会写入仓库并自动部署。</p>
+      <p class="lead">用 GitHub 个人访问令牌登录后，即可在网页里更新新闻、业务板块、项目案例、资质荣誉和联系方式。保存会写入仓库并自动部署。</p>
       <div class="help">
         1. 打开
         <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">创建 Fine-grained Token</a><br>
@@ -36,6 +36,8 @@
     <section id="app-view" class="hidden">
       <div class="tabs">
         <button class="btn btn-ghost" data-tab="news" aria-selected="true" type="button">新闻中心</button>
+        <button class="btn btn-ghost" data-tab="business" type="button">业务板块</button>
+        <button class="btn btn-ghost" data-tab="projects" type="button">项目案例</button>
         <button class="btn btn-ghost" data-tab="honors" type="button">资质荣誉</button>
         <button class="btn btn-ghost" data-tab="site" type="button">联系方式</button>
         <button class="btn btn-ghost" id="logout-btn" type="button">退出</button>
@@ -102,6 +104,135 @@
           <button class="btn btn-ghost" id="cancel-news" type="button">返回列表</button>
         </div>
         <p class="status" id="news-status"></p>
+      </section>
+
+      <section id="biz-list-view" class="card hidden">
+        <h2>业务板块</h2>
+        <p class="help">现有四个板块已导入。日后新增或改写说明，保存后会出现在首页卡片和「业务板块」页面。</p>
+        <div class="row">
+          <button class="btn" id="new-biz" type="button">新增板块</button>
+        </div>
+        <div id="biz-list"></div>
+      </section>
+
+      <section id="biz-form-view" class="card hidden">
+        <h2 id="biz-form-title">编辑业务板块</h2>
+        <label>编号 id（英文短横线）</label>
+        <input id="b-id" type="text" placeholder="four-electric">
+        <label>首页图标</label>
+        <select id="b-icon">
+          <option value="rail">轨道 / 四电</option>
+          <option value="power">机电 / 供电</option>
+          <option value="rd">科研 / 制造</option>
+          <option value="shield">运维 / 保障</option>
+        </select>
+        <div class="grid-2">
+          <div>
+            <label>名称（繁中）</label>
+            <input id="b-title-zh" type="text">
+          </div>
+          <div>
+            <label>Name (EN)</label>
+            <input id="b-title-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>首页摘要（繁中）</label>
+            <textarea id="b-summary-zh"></textarea>
+          </div>
+          <div>
+            <label>Homepage summary (EN)</label>
+            <textarea id="b-summary-en"></textarea>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>详情正文（繁中）</label>
+            <textarea id="b-body-zh"></textarea>
+          </div>
+          <div>
+            <label>Detail body (EN)</label>
+            <textarea id="b-body-en"></textarea>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>要点列表（繁中，一行一条，可留空）</label>
+            <textarea id="b-points-zh"></textarea>
+          </div>
+          <div>
+            <label>Bullet points (EN, one per line)</label>
+            <textarea id="b-points-en"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="save-biz" type="button">保存并发布</button>
+          <button class="btn btn-ghost" id="cancel-biz" type="button">返回列表</button>
+        </div>
+        <p class="status" id="biz-status"></p>
+      </section>
+
+      <section id="project-list-view" class="card hidden">
+        <h2>项目案例</h2>
+        <p class="help">现有项目已导入。可补充图文详情；勾选「首页展示」的条目会出现在首页。前台点击进入独立详情页。</p>
+        <div class="row">
+          <button class="btn" id="new-project" type="button">新增项目</button>
+        </div>
+        <div id="project-list"></div>
+      </section>
+
+      <section id="project-form-view" class="card hidden">
+        <h2 id="project-form-title">编辑项目</h2>
+        <label>编号 id（保存后用于网址）</label>
+        <input id="p-id" type="text" placeholder="mtr-three-line">
+        <label class="check"><input id="p-featured" type="checkbox"> 在首页「项目案例」展示</label>
+        <div class="grid-2">
+          <div>
+            <label>标签（繁中，如 香港 · 2020–2028）</label>
+            <input id="p-tag-zh" type="text">
+          </div>
+          <div>
+            <label>Tag (EN)</label>
+            <input id="p-tag-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>名称（繁中）</label>
+            <input id="p-title-zh" type="text">
+          </div>
+          <div>
+            <label>Name (EN)</label>
+            <input id="p-title-en" type="text">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>摘要（繁中，列表与首页用）</label>
+            <textarea id="p-summary-zh"></textarea>
+          </div>
+          <div>
+            <label>Summary (EN)</label>
+            <textarea id="p-summary-en"></textarea>
+          </div>
+        </div>
+        <label>封面照片（jpg / png / webp，可留空）</label>
+        <input id="p-image" type="text" placeholder="uploads/projects/xxx.jpg">
+        <input id="p-image-file" type="file" accept="image/jpeg,image/png,image/webp">
+        <label>详情排版</label>
+        <p class="help">与新闻相同：按阅读顺序插入文字和图片。动图（gif）不会采用。</p>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="add-p-text-block" type="button">插入文字段</button>
+          <button class="btn" id="add-p-image-block" type="button">插入图片</button>
+        </div>
+        <div id="p-blocks" class="blocks"></div>
+        <input id="p-block-file" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
+        <div class="row">
+          <button class="btn" id="save-project" type="button">保存并发布</button>
+          <button class="btn btn-ghost" id="cancel-project" type="button">返回列表</button>
+        </div>
+        <p class="status" id="project-status"></p>
       </section>
 
       <section id="honor-list-view" class="card hidden">

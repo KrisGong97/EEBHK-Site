@@ -1,0 +1,93 @@
+{
+  "lead": {
+    "zh": "從高速鐵路到城市軌道，從系統集成到工業製造，構建軌道交通全產業鏈服務能力。",
+    "en": "From high-speed rail to urban transit, from system integration to industrial manufacturing — a full rail transit value chain."
+  },
+  "items": [
+    {
+      "id": "four-electric",
+      "icon": "rail",
+      "title": {
+        "zh": "軌道交通「四電」系統集成",
+        "en": "Four-Electric System Integration"
+      },
+      "summary": {
+        "zh": "接觸網、牽引變電、電力、通信信號四大系統的勘察設計、工程施工與系統集成，全面掌握高速電氣化鐵路技術體系。",
+        "en": "Survey, design, construction and integration of overhead catenary, traction substation, power, and communication & signalling systems."
+      },
+      "body": {
+        "zh": "集團構建了「重載、長大幹線、高鐵」三種制式的技術體系，全面掌握高速電氣化鐵路設計與施工技術體系、系統集成管理體系，構築起具有完全自主知識產權的中國高速鐵路牽引供電技術平台。",
+        "en": "The Group has built technical systems for heavy-haul, long-trunk and high-speed railways, fully mastering high-speed electrification design and construction, system integration management, and a proprietary Chinese high-speed railway traction power supply technology platform."
+      },
+      "points": [
+        {
+          "zh": "接觸網系統：設計、施工與系統集成，懸掛產品覆蓋全國七成以上已開通軌道交通線路",
+          "en": "Overhead catenary systems: design, construction and integration — products used in over 70% of China's operating rail transit lines"
+        },
+        {
+          "zh": "牽引變電系統：牽引變電所設計、設備安裝與調試",
+          "en": "Traction substation systems: substation design, equipment installation and commissioning"
+        },
+        {
+          "zh": "電力系統：鐵路及城市軌道交通供配電工程",
+          "en": "Power systems: power supply and distribution for railways and urban rail transit"
+        },
+        {
+          "zh": "通信信號系統：軌道交通通信、信號系統工程",
+          "en": "Communication & signalling systems for rail transit"
+        }
+      ]
+    },
+    {
+      "id": "urban-em",
+      "icon": "power",
+      "title": {
+        "zh": "城市軌道機電工程",
+        "en": "Urban Rail E&M Works"
+      },
+      "summary": {
+        "zh": "供電系統更新改造、月台幕門系統、機電設備安裝與調試，在營運線路上實現高難度不停運施工。",
+        "en": "Power supply system renewal, platform screen doors, E&M installation and commissioning — including complex works on live operating lines."
+      },
+      "body": {
+        "zh": "深耕港鐵市場，在營運時間超過 19 小時的繁忙線路上實施高難度不停運施工，涵蓋供電系統更新改造的設計、供貨、安裝與測試，以及月台幕門系統的設計、供貨、安裝與調試，並具備與各機電系統承辦商、土木承辦商的接口協調能力。",
+        "en": "Deeply rooted in the MTR market, the company delivers highly complex works on live lines operating over 19 hours a day — covering the design, supply, installation and testing of power supply renewals, as well as platform screen door systems — with proven interface coordination capabilities across E&M and civil contractors."
+      },
+      "points": []
+    },
+    {
+      "id": "rd-manufacturing",
+      "icon": "rd",
+      "title": {
+        "zh": "科研與工業製造",
+        "en": "R&D & Manufacturing"
+      },
+      "summary": {
+        "zh": "依託世界最大的接觸網器材生產基地，懸掛產品覆蓋全國七成以上已開通軌道交通線路。",
+        "en": "Backed by the world's largest catenary component production base, with products used in over 70% of China's operating rail transit lines."
+      },
+      "body": {
+        "zh": "集團擁有世界最大的鐵路電氣化和地鐵接觸網專業生產基地，並深入開展基於大數據、互聯網、5G、北斗導航等新技術的研發與應用，推進智能建造實踐與智慧工地建設，打造高鐵「四電」工程智能建造新標杆。",
+        "en": "The Group operates the world's largest production base for railway electrification and metro catenary equipment, and actively applies big data, the Internet, 5G and BeiDou navigation technologies to advance intelligent construction and smart site management, setting new benchmarks for four-electric HSR engineering."
+      },
+      "points": []
+    },
+    {
+      "id": "om-services",
+      "icon": "shield",
+      "title": {
+        "zh": "運營維管服務",
+        "en": "O&M Services"
+      },
+      "summary": {
+        "zh": "覆蓋軌道交通設施全生命週期的運營、維護與管理服務，保障系統長期安全可靠運行。",
+        "en": "Full life-cycle operation, maintenance and management of rail transit facilities for long-term safety and reliability."
+      },
+      "body": {
+        "zh": "提供覆蓋軌道交通設施全生命週期的運營、維護與管理服務，依託接觸網動態檢測車、巡檢機器人等自主研發裝備，保障系統長期安全、可靠、高效運行。",
+        "en": "Full life-cycle operation, maintenance and management of rail transit facilities, supported by self-developed equipment such as catenary dynamic inspection vehicles and inspection robots, ensuring long-term safe, reliable and efficient operations."
+      },
+      "points": []
+    }
+  ]
+}

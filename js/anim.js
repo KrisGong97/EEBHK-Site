@@ -43,6 +43,7 @@
   var pinSection = document.querySelector('#business');
   var pinActive = !!(pinSection && hasGsap && window.innerWidth > 900);
   if (pinActive) pinSection.classList.add('pin-active');
+  var pinStarted = false;
 
   // ---------- 滚动渐显 ----------
   var revealEls = [];
@@ -135,11 +136,17 @@
   }
 
   // ---------- GSAP 钉住时间线 ----------
-  if (pinActive) {
+  // 首页业务卡可能由 content.js 替换，等卡片就绪后再绑定，避免钉住旧节点
+  function initPin() {
+    if (!pinActive || pinStarted || !pinSection) return;
     var gsap = window.gsap;
     var cards = gsap.utils.toArray(pinSection.querySelectorAll('.card'));
+    if (cards.length < 2) return;
+    pinStarted = true;
     var current = pinSection.querySelector('.pin-current');
     var bar = pinSection.querySelector('.pin-bar span');
+    var total = pinSection.querySelector('.pin-total');
+    if (total) total.textContent = '/ ' + ('0' + cards.length).slice(-2);
 
     gsap.set(cards, { opacity: 0, y: 36 });
     gsap.set(cards[0], { opacity: 1, y: 0 });
@@ -161,10 +168,17 @@
       }
     });
 
-    // 每张卡占 1 个时间单位：先出后进，snap 点落在切换完成之后
     for (var i = 1; i < cards.length; i++) {
       tl.to(cards[i - 1], { opacity: 0, y: -36, duration: 0.4, ease: 'power2.in' }, i - 1)
         .fromTo(cards[i], { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i - 1 + 0.35);
+    }
+  }
+
+  if (pinActive) {
+    if (document.querySelector('[data-business-cards]')) {
+      window.addEventListener('eebhk:business-ready', initPin, { once: true });
+    } else {
+      initPin();
     }
   }
 })();

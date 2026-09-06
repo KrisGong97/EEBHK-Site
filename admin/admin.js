@@ -7,8 +7,12 @@
   var newsFile = { sha: '', data: { note: { zh: '', en: '' }, items: [] } };
   var siteFile = { sha: '', data: { contact: {} } };
   var honorsFile = { sha: '', data: { items: [] } };
+  var businessFile = { sha: '', data: { lead: { zh: '', en: '' }, items: [] } };
+  var projectsFile = { sha: '', data: { lead: { zh: '', en: '' }, items: [] } };
   var editingId = null;
   var editingHonorId = null;
+  var editingBizId = null;
+  var editingProjectId = null;
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -98,7 +102,7 @@
   }
 
   function show(id) {
-    ['news-list-view', 'news-form-view', 'honor-list-view', 'honor-form-view', 'site-view'].forEach(function (name) {
+    ['news-list-view', 'news-form-view', 'biz-list-view', 'biz-form-view', 'project-list-view', 'project-form-view', 'honor-list-view', 'honor-form-view', 'site-view'].forEach(function (name) {
       $(name).classList.toggle('hidden', name !== id);
     });
   }
@@ -145,6 +149,20 @@
 
   var draftBlocks = [];
   var uploadBlockIndex = -1;
+  var blockCtx = {
+    boxId: 'blocks',
+    fileId: 'block-file',
+    folder: 'uploads/news/',
+    statusId: 'news-status'
+  };
+
+  function setBlockCtx(kind) {
+    if (kind === 'project') {
+      blockCtx = { boxId: 'p-blocks', fileId: 'p-block-file', folder: 'uploads/projects/', statusId: 'project-status' };
+    } else {
+      blockCtx = { boxId: 'blocks', fileId: 'block-file', folder: 'uploads/news/', statusId: 'news-status' };
+    }
+  }
 
   function emptyNews() {
     return {
@@ -190,7 +208,7 @@
 
   function syncBlocksFromDom() {
     var next = [];
-    Array.prototype.forEach.call($('blocks').children, function (el, i) {
+    Array.prototype.forEach.call($(blockCtx.boxId).children, function (el, i) {
       var block = draftBlocks[i] || { type: 'text', zh: '', en: '' };
       if (block.type === 'image') {
         var src = (el.querySelector('[data-f="src"]') || {}).value || '';
@@ -215,7 +233,7 @@
   }
 
   function renderBlocks() {
-    var box = $('blocks');
+    var box = $(blockCtx.boxId);
     box.innerHTML = '';
     draftBlocks.forEach(function (block, i) {
       var el = document.createElement('div');
@@ -302,6 +320,7 @@
       : emptyNews();
     if (!item) item = emptyNews();
     editingId = id || null;
+    setBlockCtx('news');
     draftBlocks = itemToBlocks(item);
     $('news-form-title').textContent = id ? '编辑新闻' : '新建新闻';
     $('f-id').value = item.id || '';
@@ -579,10 +598,291 @@
     });
   }
 
+  function linesOf(text) {
+    return String(text || '').replace(/\r\n/g, '\n').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function zipPoints(zhText, enText) {
+    var zh = linesOf(zhText);
+    var en = linesOf(enText);
+    var n = Math.max(zh.length, en.length);
+    var out = [];
+    for (var i = 0; i < n; i++) out.push({ zh: zh[i] || '', en: en[i] || '' });
+    return out;
+  }
+
+  function renderBizList() {
+    var box = $('biz-list');
+    box.innerHTML = '';
+    var items = businessFile.data.items || [];
+    if (!items.length) {
+      box.textContent = '还没有业务板块。';
+      return;
+    }
+    items.forEach(function (item, index) {
+      var row = document.createElement('div');
+      row.className = 'news-row';
+      var left = document.createElement('div');
+      var title = document.createElement('div');
+      title.textContent = (item.title && item.title.zh) || item.id;
+      var meta = document.createElement('small');
+      meta.textContent = (index + 1) + '  ·  ' + item.id;
+      left.appendChild(title);
+      left.appendChild(meta);
+      var actions = document.createElement('div');
+      actions.className = 'row';
+      var edit = document.createElement('button');
+      edit.className = 'btn btn-ghost';
+      edit.type = 'button';
+      edit.textContent = '编辑';
+      edit.addEventListener('click', function () { openBizForm(item.id); });
+      var del = document.createElement('button');
+      del.className = 'btn btn-danger';
+      del.type = 'button';
+      del.textContent = '删除';
+      del.addEventListener('click', function () { deleteBiz(item.id); });
+      actions.appendChild(edit);
+      actions.appendChild(del);
+      row.appendChild(left);
+      row.appendChild(actions);
+      box.appendChild(row);
+    });
+  }
+
+  function openBizForm(id) {
+    var item = id
+      ? (businessFile.data.items || []).filter(function (x) { return x.id === id; })[0]
+      : { id: '', icon: 'rail', title: { zh: '', en: '' }, summary: { zh: '', en: '' }, body: { zh: '', en: '' }, points: [] };
+    if (!item) item = { id: '', icon: 'rail', title: { zh: '', en: '' }, summary: { zh: '', en: '' }, body: { zh: '', en: '' }, points: [] };
+    editingBizId = id || null;
+    $('biz-form-title').textContent = id ? '编辑业务板块' : '新增业务板块';
+    $('b-id').value = item.id || '';
+    $('b-id').disabled = !!id;
+    $('b-icon').value = item.icon || 'rail';
+    $('b-title-zh').value = (item.title && item.title.zh) || '';
+    $('b-title-en').value = (item.title && item.title.en) || '';
+    $('b-summary-zh').value = (item.summary && item.summary.zh) || '';
+    $('b-summary-en').value = (item.summary && item.summary.en) || '';
+    $('b-body-zh').value = (item.body && item.body.zh) || '';
+    $('b-body-en').value = (item.body && item.body.en) || '';
+    $('b-points-zh').value = (item.points || []).map(function (p) { return p.zh || ''; }).filter(Boolean).join('\n');
+    $('b-points-en').value = (item.points || []).map(function (p) { return p.en || ''; }).filter(Boolean).join('\n');
+    setStatus($('biz-status'), '');
+    show('biz-form-view');
+  }
+
+  function collectBiz() {
+    var titleZh = $('b-title-zh').value.trim();
+    var id = $('b-id').value.trim() || slugify($('b-title-en').value || titleZh);
+    return {
+      id: id,
+      icon: $('b-icon').value || 'rail',
+      title: { zh: titleZh, en: $('b-title-en').value.trim() },
+      summary: { zh: $('b-summary-zh').value.trim(), en: $('b-summary-en').value.trim() },
+      body: { zh: $('b-body-zh').value.trim(), en: $('b-body-en').value.trim() },
+      points: zipPoints($('b-points-zh').value, $('b-points-en').value)
+    };
+  }
+
+  function saveBiz() {
+    var btn = $('save-biz');
+    var status = $('biz-status');
+    var item = collectBiz();
+    if (!item.title.zh) {
+      setStatus(status, '请至少填写繁中名称。', 'err');
+      return;
+    }
+    if (!businessFile.data.items) businessFile.data.items = [];
+    var items = businessFile.data.items;
+    var idx = -1;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].id === item.id || (editingBizId && items[i].id === editingBizId)) {
+        idx = i;
+        break;
+      }
+    }
+    var isUpdate = idx >= 0;
+    if (isUpdate) items[idx] = item;
+    else items.push(item);
+    editingBizId = item.id;
+    $('b-id').value = item.id;
+    $('b-id').disabled = true;
+    btn.disabled = true;
+    setStatus(status, '正在保存…');
+    saveFile('content/business.json', businessFile, isUpdate ? '更新业务板块：' + item.id : '新增业务板块：' + item.id).then(function () {
+      setStatus(status, '已保存。约 30 秒后刷新网站即可看到。', 'ok');
+      renderBizList();
+    }).catch(function (err) {
+      setStatus(status, '保存失败：' + err.message, 'err');
+    }).then(function () {
+      btn.disabled = false;
+    });
+  }
+
+  function deleteBiz(id) {
+    if (!confirm('确定删除这个业务板块？删除后会立即写入仓库。')) return;
+    businessFile.data.items = (businessFile.data.items || []).filter(function (x) { return x.id !== id; });
+    saveFile('content/business.json', businessFile, '删除业务板块：' + id).then(function () {
+      renderBizList();
+    }).catch(function (err) {
+      alert('删除失败：' + err.message);
+    });
+  }
+
+  function renderProjectAdminList() {
+    var box = $('project-list');
+    box.innerHTML = '';
+    var items = projectsFile.data.items || [];
+    if (!items.length) {
+      box.textContent = '还没有项目。点击上方按钮新增。';
+      return;
+    }
+    items.forEach(function (item) {
+      var row = document.createElement('div');
+      row.className = 'news-row';
+      var left = document.createElement('div');
+      var title = document.createElement('div');
+      title.textContent = (item.title && item.title.zh) || item.id;
+      var meta = document.createElement('small');
+      meta.textContent = (item.featured ? '首页  ·  ' : '') + ((item.tag && item.tag.zh) || '') + '  ·  ' + item.id;
+      left.appendChild(title);
+      left.appendChild(meta);
+      var actions = document.createElement('div');
+      actions.className = 'row';
+      var edit = document.createElement('button');
+      edit.className = 'btn btn-ghost';
+      edit.type = 'button';
+      edit.textContent = '编辑';
+      edit.addEventListener('click', function () { openProjectForm(item.id); });
+      var del = document.createElement('button');
+      del.className = 'btn btn-danger';
+      del.type = 'button';
+      del.textContent = '删除';
+      del.addEventListener('click', function () { deleteProject(item.id); });
+      actions.appendChild(edit);
+      actions.appendChild(del);
+      row.appendChild(left);
+      row.appendChild(actions);
+      box.appendChild(row);
+    });
+  }
+
+  function emptyProject() {
+    return {
+      id: '',
+      featured: true,
+      tag: { zh: '', en: '' },
+      title: { zh: '', en: '' },
+      summary: { zh: '', en: '' },
+      image: '',
+      blocks: [{ type: 'text', zh: '', en: '' }]
+    };
+  }
+
+  function openProjectForm(id) {
+    var item = id
+      ? (projectsFile.data.items || []).filter(function (x) { return x.id === id; })[0]
+      : emptyProject();
+    if (!item) item = emptyProject();
+    editingProjectId = id || null;
+    setBlockCtx('project');
+    draftBlocks = itemToBlocks(item);
+    $('project-form-title').textContent = id ? '编辑项目' : '新增项目';
+    $('p-id').value = item.id || '';
+    $('p-id').disabled = !!id;
+    $('p-featured').checked = item.featured !== false;
+    $('p-tag-zh').value = (item.tag && item.tag.zh) || '';
+    $('p-tag-en').value = (item.tag && item.tag.en) || '';
+    $('p-title-zh').value = (item.title && item.title.zh) || '';
+    $('p-title-en').value = (item.title && item.title.en) || '';
+    $('p-summary-zh').value = (item.summary && item.summary.zh) || '';
+    $('p-summary-en').value = (item.summary && item.summary.en) || '';
+    $('p-image').value = item.image || '';
+    $('p-image-file').value = '';
+    renderBlocks();
+    setStatus($('project-status'), '');
+    show('project-form-view');
+  }
+
+  function collectProject() {
+    var blocks = syncBlocksFromDom().filter(function (b) {
+      if (b.type === 'image') return b.src && !/\.gif(\?|$)/i.test(b.src);
+      return !!(b.zh.trim() || b.en.trim());
+    });
+    var titleZh = $('p-title-zh').value.trim();
+    var id = $('p-id').value.trim() || slugify($('p-title-en').value || titleZh);
+    return {
+      id: id,
+      featured: $('p-featured').checked,
+      tag: { zh: $('p-tag-zh').value.trim(), en: $('p-tag-en').value.trim() },
+      title: { zh: titleZh, en: $('p-title-en').value.trim() },
+      summary: { zh: $('p-summary-zh').value.trim(), en: $('p-summary-en').value.trim() },
+      image: $('p-image').value.trim(),
+      blocks: blocks
+    };
+  }
+
+  function saveProject() {
+    var btn = $('save-project');
+    var status = $('project-status');
+    setBlockCtx('project');
+    var item = collectProject();
+    if (!item.title.zh) {
+      setStatus(status, '请至少填写繁中名称。', 'err');
+      return;
+    }
+    var file = $('p-image-file').files[0];
+    if (file && (/\.gif$/i.test(file.name) || file.type === 'image/gif')) {
+      setStatus(status, '不采用动图，请上传 jpg / png / webp。', 'err');
+      return;
+    }
+    btn.disabled = true;
+    setStatus(status, '正在保存…');
+    var upload = file ? uploadImage(file, 'uploads/projects/') : Promise.resolve(item.image);
+    upload.then(function (imagePath) {
+      item.image = imagePath || item.image;
+      if (!projectsFile.data.items) projectsFile.data.items = [];
+      var items = projectsFile.data.items;
+      var idx = -1;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].id === item.id || (editingProjectId && items[i].id === editingProjectId)) {
+          idx = i;
+          break;
+        }
+      }
+      var isUpdate = idx >= 0;
+      if (isUpdate) items[idx] = item;
+      else items.unshift(item);
+      editingProjectId = item.id;
+      $('p-id').value = item.id;
+      $('p-id').disabled = true;
+      return saveFile('content/projects.json', projectsFile, isUpdate ? '更新项目：' + item.id : '新增项目：' + item.id);
+    }).then(function () {
+      setStatus(status, '已保存。约 30 秒后刷新网站即可看到。', 'ok');
+      renderProjectAdminList();
+    }).catch(function (err) {
+      setStatus(status, '保存失败：' + err.message, 'err');
+    }).then(function () {
+      btn.disabled = false;
+    });
+  }
+
+  function deleteProject(id) {
+    if (!confirm('确定删除这个项目？删除后会立即写入仓库。')) return;
+    projectsFile.data.items = (projectsFile.data.items || []).filter(function (x) { return x.id !== id; });
+    saveFile('content/projects.json', projectsFile, '删除项目：' + id).then(function () {
+      renderProjectAdminList();
+    }).catch(function (err) {
+      alert('删除失败：' + err.message);
+    });
+  }
+
   function afterLogin() {
     $('login-view').classList.add('hidden');
     $('app-view').classList.remove('hidden');
     renderNewsList();
+    renderBizList();
+    renderProjectAdminList();
     renderHonorList();
     fillSite();
     show('news-list-view');
@@ -598,7 +898,9 @@
     Promise.all([
       loadFile('content/news.json', newsFile),
       loadFile('content/site.json', siteFile),
-      loadFile('content/honors.json', honorsFile)
+      loadFile('content/honors.json', honorsFile),
+      loadFile('content/business.json', businessFile),
+      loadFile('content/projects.json', projectsFile)
     ]).then(afterLogin).catch(function (err) {
       token = '';
       setStatus($('login-status'), '登录失败：' + err.message, 'err');
@@ -622,6 +924,12 @@
       if (tab === 'news') {
         renderNewsList();
         show('news-list-view');
+      } else if (tab === 'business') {
+        renderBizList();
+        show('biz-list-view');
+      } else if (tab === 'projects') {
+        renderProjectAdminList();
+        show('project-list-view');
       } else if (tab === 'honors') {
         renderHonorList();
         show('honor-list-view');
@@ -639,20 +947,26 @@
   $('new-honor').addEventListener('click', function () { openHonorForm(null); });
   $('cancel-honor').addEventListener('click', function () { show('honor-list-view'); });
   $('save-honor').addEventListener('click', saveHonor);
+  $('new-biz').addEventListener('click', function () { openBizForm(null); });
+  $('cancel-biz').addEventListener('click', function () { show('biz-list-view'); });
+  $('save-biz').addEventListener('click', saveBiz);
+  $('new-project').addEventListener('click', function () { openProjectForm(null); });
+  $('cancel-project').addEventListener('click', function () { show('project-list-view'); });
+  $('save-project').addEventListener('click', saveProject);
 
-  $('add-text-block').addEventListener('click', function () {
+  function addTextBlock() {
     syncBlocksFromDom();
     draftBlocks.push({ type: 'text', zh: '', en: '' });
     renderBlocks();
-  });
+  }
 
-  $('add-image-block').addEventListener('click', function () {
+  function addImageBlock() {
     syncBlocksFromDom();
     draftBlocks.push({ type: 'image', src: '', caption: { zh: '', en: '' } });
     renderBlocks();
-  });
+  }
 
-  $('blocks').addEventListener('click', function (e) {
+  function onBlockBoxClick(e) {
     var btn = e.target.closest('[data-act]');
     if (!btn) return;
     var blockEl = btn.closest('.block');
@@ -670,35 +984,69 @@
       draftBlocks[i] = down;
     } else if (act === 'remove') {
       if (draftBlocks.length === 1) {
-        setStatus($('news-status'), '至少保留一块内容。', 'err');
+        setStatus($(blockCtx.statusId), '至少保留一块内容。', 'err');
         return;
       }
       draftBlocks.splice(i, 1);
     } else if (act === 'upload') {
       uploadBlockIndex = i;
-      $('block-file').value = '';
-      $('block-file').click();
+      $(blockCtx.fileId).value = '';
+      $(blockCtx.fileId).click();
       return;
     }
     renderBlocks();
-  });
+  }
 
-  $('block-file').addEventListener('change', function () {
+  function onBlockFileChange() {
     var file = this.files && this.files[0];
     var i = uploadBlockIndex;
     if (!file || i < 0) return;
     if (/\.gif$/i.test(file.name) || file.type === 'image/gif') {
-      setStatus($('news-status'), '不采用动图，请上传 jpg / png / webp。', 'err');
+      setStatus($(blockCtx.statusId), '不采用动图，请上传 jpg / png / webp。', 'err');
       return;
     }
-    setStatus($('news-status'), '正在上传图片…');
-    uploadImage(file).then(function (dest) {
+    setStatus($(blockCtx.statusId), '正在上传图片…');
+    uploadImage(file, blockCtx.folder).then(function (dest) {
       syncBlocksFromDom();
       if (draftBlocks[i] && draftBlocks[i].type === 'image') draftBlocks[i].src = dest;
       renderBlocks();
-      setStatus($('news-status'), '图片已上传，保存新闻后才会发布到网站。', 'ok');
+      setStatus($(blockCtx.statusId), '图片已上传，保存后才会发布到网站。', 'ok');
     }).catch(function (err) {
-      setStatus($('news-status'), '图片上传失败：' + err.message, 'err');
+      setStatus($(blockCtx.statusId), '图片上传失败：' + err.message, 'err');
     });
+  }
+
+  $('add-text-block').addEventListener('click', function () {
+    setBlockCtx('news');
+    addTextBlock();
+  });
+  $('add-image-block').addEventListener('click', function () {
+    setBlockCtx('news');
+    addImageBlock();
+  });
+  $('blocks').addEventListener('click', function (e) {
+    setBlockCtx('news');
+    onBlockBoxClick(e);
+  });
+  $('block-file').addEventListener('change', function () {
+    setBlockCtx('news');
+    onBlockFileChange.call(this);
+  });
+
+  $('add-p-text-block').addEventListener('click', function () {
+    setBlockCtx('project');
+    addTextBlock();
+  });
+  $('add-p-image-block').addEventListener('click', function () {
+    setBlockCtx('project');
+    addImageBlock();
+  });
+  $('p-blocks').addEventListener('click', function (e) {
+    setBlockCtx('project');
+    onBlockBoxClick(e);
+  });
+  $('p-block-file').addEventListener('change', function () {
+    setBlockCtx('project');
+    onBlockFileChange.call(this);
   });
 })();

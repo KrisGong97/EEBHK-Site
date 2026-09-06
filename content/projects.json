@@ -1,0 +1,85 @@
+{
+  "lead": {
+    "zh": "以世界級工程實績，服務香港城市交通發展。",
+    "en": "World-class engineering in service of Hong Kong's urban mobility."
+  },
+  "items": [
+    {
+      "id": "mtr-three-line",
+      "featured": true,
+      "tag": {
+        "zh": "香港 · 2020–2028",
+        "en": "Hong Kong · 2020–2028"
+      },
+      "title": {
+        "zh": "港鐵「三綫」供電系統改造",
+        "en": "MTR Three-Line Power Supply Renewal"
+      },
+      "summary": {
+        "zh": "荃灣綫、觀塘綫、港島綫供電系統更新改造，覆蓋 49 公里、39 個車站，合約額 30.32 億港元，為港鐵史上最大規模供電改造工程。",
+        "en": "Power supply renewal across the Tsuen Wan, Kwun Tong and Island lines — 49 km, 39 stations, HKD 3.032 billion, the largest power supply overhaul in MTR history."
+      },
+      "image": "",
+      "blocks": [
+        {
+          "type": "text",
+          "zh": "由集團牽頭的聯營體中標香港地鐵荃灣綫、觀塘綫、港島綫供電系統改造項目，合約額 30.32 億港元。三條線路為香港首期建成、營運近 40 年的市區骨幹線路，日運輸量約佔港鐵日均 500 萬人次的一半。改造涉及 49 公里、39 個車站，內容涵蓋高低壓供電系統更新改造的設計、供貨、安裝與測試。由於線路每天營運超過 19 小時，改造難度、工期與任務之艱巨堪稱港鐵之最。",
+          "en": "A joint venture led by the Group was awarded the power supply system renewal of the MTR Tsuen Wan, Kwun Tong and Island lines, valued at HKD 3.032 billion. These three lines — Hong Kong's first metro lines, in service for nearly 40 years — carry about half of the MTR's 5 million daily passenger trips. Spanning 49 km and 39 stations, the works cover the design, supply, installation and testing of high- and low-voltage power systems. With lines operating over 19 hours a day, the difficulty, duration and complexity of the renewal are unprecedented in MTR history."
+        }
+      ]
+    },
+    {
+      "id": "mtr-1254",
+      "featured": true,
+      "tag": {
+        "zh": "香港 · 進行中",
+        "en": "Hong Kong · Ongoing"
+      },
+      "title": {
+        "zh": "港鐵月台幕門合約 1254",
+        "en": "MTR Platform Screen Doors, Contract 1254"
+      },
+      "summary": {
+        "zh": "東涌綫延綫、屯門南延綫及東鐵綫共 7 個車站月台幕門的設計、供貨、安裝與調試，集團首個 NEC 合約模式項目。",
+        "en": "Design, supply, installation and commissioning of platform screen doors at 7 stations on the Tung Chung Line Extension, Tuen Mun South Extension and East Rail Line — the Group's first NEC-contract project."
+      },
+      "image": "",
+      "blocks": [
+        {
+          "type": "text",
+          "zh": "以聯營體名義中標香港鐵路有限公司東涌延綫、屯門延綫及東鐵綫月台幕門設計、供貨、安裝、調試項目，工程範圍覆蓋東涌西、東涌東、小濠灣、屯門南、屯門 16 區、洪水橋及古洞共 7 個車站的月台幕門及自動月台閘門，並負責與其他機電系統及土木承辦商的接口設計與工期協調。本項目為集團首次中標香港地鐵月台幕門專業項目，也是首個 NEC 合約模式項目。",
+          "en": "Through a joint venture, the Group was awarded the design, supply, installation and commissioning of platform screen doors for the Tung Chung Line Extension, Tuen Mun South Extension and East Rail Line — covering seven stations: Tung Chung West, Tung Chung East, Siu Ho Wan, Tuen Mun South, Tuen Mun Area 16, Hung Shui Kiu and Kwu Tung — including interface design and programme coordination with other E&M and civil contractors. This is the Group's first MTR platform screen door contract and its first project under the NEC contract model."
+        }
+      ]
+    },
+    {
+      "id": "group-hsr",
+      "featured": true,
+      "tag": {
+        "zh": "集團代表工程",
+        "en": "Group Landmarks"
+      },
+      "title": {
+        "zh": "集團世界級代表工程",
+        "en": "Group Landmark Projects"
+      },
+      "summary": {
+        "zh": "京津城際、京滬高鐵、哈大高鐵、蘭新高鐵……集團在中國高鐵建設史上創造多項中國第一與世界第一。",
+        "en": "Beijing–Tianjin Intercity, Beijing–Shanghai HSR, Harbin–Dalian HSR, Lanzhou–Xinjiang HSR — multiple national and world firsts in high-speed rail construction."
+      },
+      "image": "",
+      "blocks": [
+        {
+          "type": "text",
+          "zh": "京津城際高鐵——中國第一條時速 350 公里高速鐵路\n\n京滬高鐵——世界最高水平高速鐵路\n\n哈大高鐵——世界首條高寒地區高速鐵路\n\n蘭新高鐵——世界首條穿越高原和風區的高速鐵路\n\n坦贊鐵路——中國首條援外跨國鐵路",
+          "en": "Beijing–Tianjin Intercity — China's first 350 km/h high-speed railway\n\nBeijing–Shanghai HSR — a world benchmark for high-speed rail\n\nHarbin–Dalian HSR — the world's first high-speed railway in severe cold regions\n\nLanzhou–Xinjiang HSR — the world's first HSR crossing plateaus and wind zones\n\nTAZARA Railway — China's first international aid railway"
+        },
+        {
+          "type": "text",
+          "zh": "此外，集團先後在伊朗、烏茲別克斯坦、白俄羅斯、以色列、斯里蘭卡、巴基斯坦、印度尼西亞等國家和地區承建二十多項鐵路及城市軌道交通工程，形成以中東、中亞、東南亞和中東歐四大區域市場為依託的海外格局。",
+          "en": "The Group has also delivered more than twenty railway and urban rail transit projects in Iran, Uzbekistan, Belarus, Israel, Sri Lanka, Pakistan, Indonesia and beyond, building an overseas presence anchored in the Middle East, Central Asia, Southeast Asia and Central & Eastern Europe."
+        }
+      ]
+    }
+  ]
+}
