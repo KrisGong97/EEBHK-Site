@@ -141,6 +141,9 @@
     });
   }
 
+  var draftBlocks = [];
+  var uploadBlockIndex = -1;
+
   function emptyNews() {
     return {
       id: '',
@@ -148,6 +151,7 @@
       title: { zh: '', en: '' },
       summary: { zh: '', en: '' },
       body: { zh: '', en: '' },
+      blocks: [{ type: 'text', zh: '', en: '' }],
       image: '',
       images: [],
       video: '',
@@ -157,12 +161,146 @@
     };
   }
 
+  function itemToBlocks(item) {
+    if (item.blocks && item.blocks.length) {
+      return item.blocks.map(function (b) {
+        if (b.type === 'image') {
+          return { type: 'image', src: b.src || '', caption: { zh: (b.caption && b.caption.zh) || '', en: (b.caption && b.caption.en) || '' } };
+        }
+        return { type: 'text', zh: b.zh || '', en: b.en || '' };
+      });
+    }
+    var blocks = [];
+    if (item.body && (item.body.zh || item.body.en)) {
+      blocks.push({ type: 'text', zh: item.body.zh || '', en: item.body.en || '' });
+    }
+    var seen = {};
+    function addImage(src) {
+      if (!src || seen[src] || /\.gif(\?|$)/i.test(src)) return;
+      seen[src] = true;
+      blocks.push({ type: 'image', src: src, caption: { zh: '', en: '' } });
+    }
+    addImage(item.image);
+    (item.images || []).forEach(addImage);
+    if (!blocks.length) blocks.push({ type: 'text', zh: '', en: '' });
+    return blocks;
+  }
+
+  function syncBlocksFromDom() {
+    var next = [];
+    Array.prototype.forEach.call($('blocks').children, function (el, i) {
+      var block = draftBlocks[i] || { type: 'text', zh: '', en: '' };
+      if (block.type === 'image') {
+        var src = (el.querySelector('[data-f="src"]') || {}).value || '';
+        next.push({
+          type: 'image',
+          src: src.trim(),
+          caption: {
+            zh: ((el.querySelector('[data-f="cap-zh"]') || {}).value || '').trim(),
+            en: ((el.querySelector('[data-f="cap-en"]') || {}).value || '').trim()
+          }
+        });
+      } else {
+        next.push({
+          type: 'text',
+          zh: ((el.querySelector('[data-f="zh"]') || {}).value || '').replace(/\r\n/g, '\n'),
+          en: ((el.querySelector('[data-f="en"]') || {}).value || '').replace(/\r\n/g, '\n')
+        });
+      }
+    });
+    draftBlocks = next;
+    return draftBlocks;
+  }
+
+  function renderBlocks() {
+    var box = $('blocks');
+    box.innerHTML = '';
+    draftBlocks.forEach(function (block, i) {
+      var el = document.createElement('div');
+      el.className = 'block';
+      el.setAttribute('data-index', String(i));
+      var head = document.createElement('div');
+      head.className = 'block-head';
+      var title = document.createElement('strong');
+      title.textContent = block.type === 'image' ? ('图片 ' + (i + 1)) : ('文字 ' + (i + 1));
+      var actions = document.createElement('div');
+      actions.className = 'row';
+      [
+        ['up', '上移'],
+        ['down', '下移'],
+        ['remove', '删除']
+      ].forEach(function (pair) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = pair[0] === 'remove' ? 'btn btn-danger' : 'btn btn-ghost';
+        b.setAttribute('data-act', pair[0]);
+        b.textContent = pair[1];
+        actions.appendChild(b);
+      });
+      head.appendChild(title);
+      head.appendChild(actions);
+      el.appendChild(head);
+
+      if (block.type === 'image') {
+        var img = null;
+        if (block.src) {
+          img = document.createElement('img');
+          img.className = 'block-preview';
+          img.alt = '';
+          img.src = /^https?:\/\//i.test(block.src) ? block.src : '../' + block.src.replace(/^\//, '');
+        }
+        var pathLabel = document.createElement('label');
+        pathLabel.textContent = '图片路径或外链';
+        var path = document.createElement('input');
+        path.type = 'text';
+        path.setAttribute('data-f', 'src');
+        path.value = block.src || '';
+        path.placeholder = 'uploads/news/xxx.jpg';
+        var pick = document.createElement('button');
+        pick.type = 'button';
+        pick.className = 'btn btn-ghost';
+        pick.setAttribute('data-act', 'upload');
+        pick.textContent = '上传图片';
+        var capZh = document.createElement('textarea');
+        capZh.setAttribute('data-f', 'cap-zh');
+        capZh.placeholder = '图片说明（繁中，可留空）';
+        capZh.value = (block.caption && block.caption.zh) || '';
+        var capEn = document.createElement('textarea');
+        capEn.setAttribute('data-f', 'cap-en');
+        capEn.placeholder = 'Caption (EN, optional)';
+        capEn.value = (block.caption && block.caption.en) || '';
+        if (img) el.appendChild(img);
+        el.appendChild(pathLabel);
+        el.appendChild(path);
+        var row = document.createElement('div');
+        row.className = 'row';
+        row.appendChild(pick);
+        el.appendChild(row);
+        el.appendChild(capZh);
+        el.appendChild(capEn);
+      } else {
+        var zh = document.createElement('textarea');
+        zh.setAttribute('data-f', 'zh');
+        zh.placeholder = '繁体中文（空一行分段）';
+        zh.value = block.zh || '';
+        var en = document.createElement('textarea');
+        en.setAttribute('data-f', 'en');
+        en.placeholder = 'English (blank line = new paragraph)';
+        en.value = block.en || '';
+        el.appendChild(zh);
+        el.appendChild(en);
+      }
+      box.appendChild(el);
+    });
+  }
+
   function openNewsForm(id) {
     var item = id
       ? (newsFile.data.items || []).filter(function (x) { return x.id === id; })[0]
       : emptyNews();
     if (!item) item = emptyNews();
     editingId = id || null;
+    draftBlocks = itemToBlocks(item);
     $('news-form-title').textContent = id ? '编辑新闻' : '新建新闻';
     $('f-id').value = item.id || '';
     $('f-id').disabled = !!id;
@@ -171,20 +309,22 @@
     $('f-title-en').value = (item.title && item.title.en) || '';
     $('f-summary-zh').value = (item.summary && item.summary.zh) || '';
     $('f-summary-en').value = (item.summary && item.summary.en) || '';
-    $('f-body-zh').value = (item.body && item.body.zh) || '';
-    $('f-body-en').value = (item.body && item.body.en) || '';
-    $('f-image').value = item.image || '';
-    $('f-image-file').value = '';
     $('f-video').value = item.video || '';
     $('f-editor').value = item.editor || '';
     $('f-reviewer').value = item.reviewer || '';
     $('f-source').value = item.source || '';
-    $('f-images').value = (item.images || []).join('\n');
+    renderBlocks();
     setStatus($('news-status'), '');
     show('news-form-view');
   }
 
   function collectNews() {
+    var blocks = syncBlocksFromDom().filter(function (b) {
+      if (b.type === 'image') return b.src && !/\.gif(\?|$)/i.test(b.src);
+      return !!(b.zh.trim() || b.en.trim());
+    });
+    var texts = blocks.filter(function (b) { return b.type === 'text'; });
+    var images = blocks.filter(function (b) { return b.type === 'image'; }).map(function (b) { return b.src; });
     var date = $('f-date').value.trim();
     var id = $('f-id').value.trim() || (date + '-' + slugify($('f-title-en').value || $('f-title-zh').value));
     return {
@@ -192,11 +332,13 @@
       date: date,
       title: { zh: $('f-title-zh').value.trim(), en: $('f-title-en').value.trim() },
       summary: { zh: $('f-summary-zh').value.trim(), en: $('f-summary-en').value.trim() },
-      body: { zh: $('f-body-zh').value.replace(/\r\n/g, '\n').trim(), en: $('f-body-en').value.replace(/\r\n/g, '\n').trim() },
-      image: $('f-image').value.trim(),
-      images: $('f-images').value.split(/\n+/).map(function (s) { return s.trim(); }).filter(function (s) {
-        return s && !/\.gif(\?|$)/i.test(s);
-      }),
+      body: {
+        zh: texts.map(function (b) { return b.zh.trim(); }).filter(Boolean).join('\n\n'),
+        en: texts.map(function (b) { return b.en.trim(); }).filter(Boolean).join('\n\n')
+      },
+      blocks: blocks,
+      image: images[0] || '',
+      images: images,
       video: $('f-video').value.trim(),
       editor: $('f-editor').value.trim(),
       reviewer: $('f-reviewer').value.trim(),
@@ -212,28 +354,28 @@
       setStatus(status, '请至少填写日期和繁中标题。', 'err');
       return;
     }
+    if (!item.blocks.length) {
+      setStatus(status, '请至少加入一段文字或一张图片。', 'err');
+      return;
+    }
     btn.disabled = true;
     setStatus(status, '正在保存…');
 
-    var file = $('f-image-file').files[0];
-    var upload = file ? uploadImage(file) : Promise.resolve(item.image);
-
-    upload.then(function (imagePath) {
-      item.image = imagePath || '';
-      if (item.image && item.images.indexOf(item.image) === -1) item.images.unshift(item.image);
-      if (!newsFile.data.items) newsFile.data.items = [];
-      if (editingId) {
-        newsFile.data.items = newsFile.data.items.map(function (x) {
-          return x.id === editingId ? item : x;
-        });
-      } else {
-        if (newsFile.data.items.some(function (x) { return x.id === item.id; })) {
-          throw new Error('编号 id 已存在，请换一个。');
-        }
-        newsFile.data.items.unshift(item);
+    if (!newsFile.data.items) newsFile.data.items = [];
+    if (editingId) {
+      newsFile.data.items = newsFile.data.items.map(function (x) {
+        return x.id === editingId ? item : x;
+      });
+    } else {
+      if (newsFile.data.items.some(function (x) { return x.id === item.id; })) {
+        setStatus(status, '编号 id 已存在，请换一个。', 'err');
+        btn.disabled = false;
+        return;
       }
-      return saveFile('content/news.json', newsFile, editingId ? '更新新闻：' + item.id : '新增新闻：' + item.id);
-    }).then(function () {
+      newsFile.data.items.unshift(item);
+    }
+
+    saveFile('content/news.json', newsFile, editingId ? '更新新闻：' + item.id : '新增新闻：' + item.id).then(function () {
       setStatus(status, '已保存。约 30 秒后刷新网站即可看到更新。', 'ok');
       renderNewsList();
     }).catch(function (err) {
@@ -343,4 +485,66 @@
   $('cancel-news').addEventListener('click', function () { show('news-list-view'); });
   $('save-news').addEventListener('click', saveNews);
   $('save-site').addEventListener('click', saveSite);
+
+  $('add-text-block').addEventListener('click', function () {
+    syncBlocksFromDom();
+    draftBlocks.push({ type: 'text', zh: '', en: '' });
+    renderBlocks();
+  });
+
+  $('add-image-block').addEventListener('click', function () {
+    syncBlocksFromDom();
+    draftBlocks.push({ type: 'image', src: '', caption: { zh: '', en: '' } });
+    renderBlocks();
+  });
+
+  $('blocks').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var blockEl = btn.closest('.block');
+    if (!blockEl) return;
+    var i = parseInt(blockEl.getAttribute('data-index'), 10);
+    syncBlocksFromDom();
+    var act = btn.getAttribute('data-act');
+    if (act === 'up' && i > 0) {
+      var up = draftBlocks[i - 1];
+      draftBlocks[i - 1] = draftBlocks[i];
+      draftBlocks[i] = up;
+    } else if (act === 'down' && i < draftBlocks.length - 1) {
+      var down = draftBlocks[i + 1];
+      draftBlocks[i + 1] = draftBlocks[i];
+      draftBlocks[i] = down;
+    } else if (act === 'remove') {
+      if (draftBlocks.length === 1) {
+        setStatus($('news-status'), '至少保留一块内容。', 'err');
+        return;
+      }
+      draftBlocks.splice(i, 1);
+    } else if (act === 'upload') {
+      uploadBlockIndex = i;
+      $('block-file').value = '';
+      $('block-file').click();
+      return;
+    }
+    renderBlocks();
+  });
+
+  $('block-file').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    var i = uploadBlockIndex;
+    if (!file || i < 0) return;
+    if (/\.gif$/i.test(file.name) || file.type === 'image/gif') {
+      setStatus($('news-status'), '不采用动图，请上传 jpg / png / webp。', 'err');
+      return;
+    }
+    setStatus($('news-status'), '正在上传图片…');
+    uploadImage(file).then(function (dest) {
+      syncBlocksFromDom();
+      if (draftBlocks[i] && draftBlocks[i].type === 'image') draftBlocks[i].src = dest;
+      renderBlocks();
+      setStatus($('news-status'), '图片已上传，保存新闻后才会发布到网站。', 'ok');
+    }).catch(function (err) {
+      setStatus($('news-status'), '图片上传失败：' + err.message, 'err');
+    });
+  });
 })();

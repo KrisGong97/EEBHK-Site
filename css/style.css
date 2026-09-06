@@ -672,6 +672,17 @@ html[lang="en"] .hero-eyebrow { font-size: 20px; letter-spacing: .18em; }
   border-radius: var(--radius);
 }
 
+.article-figure {
+  margin: 28px 0;
+  max-width: 760px;
+}
+
+.article-figure figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
 .article-cover {
   width: 100%;
   max-height: 460px;

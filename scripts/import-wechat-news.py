@@ -300,12 +300,18 @@ def to_news_item(raw: dict, copied: list[str]) -> dict:
     title = raw["title"]
     news_id = f"{dt.isoformat()}-{slugify(raw['title_en'] or title)}"
     summary = (raw["body"] or "")[:80].replace("\n", " ")
+    blocks = []
+    if raw["body"] or raw["body_en"]:
+        blocks.append({"type": "text", "zh": raw["body"], "en": raw["body_en"] or raw["body"]})
+    for src in copied:
+        blocks.append({"type": "image", "src": src, "caption": {"zh": "", "en": ""}})
     return {
         "id": news_id,
         "date": dt.isoformat(),
         "title": {"zh": title, "en": raw["title_en"] or title},
         "summary": {"zh": summary, "en": summary},
         "body": {"zh": raw["body"], "en": raw["body_en"] or raw["body"]},
+        "blocks": blocks,
         "image": copied[0] if copied else "",
         "images": copied,
         "video": "",
