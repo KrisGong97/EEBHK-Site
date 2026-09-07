@@ -164,7 +164,7 @@ section { padding: 96px 0; }
 .hero-bg {
   position: absolute;
   inset: -12% 0;
-  background: url("../images/hero-bg.jpg") right center / cover no-repeat;
+  background: url("../images/hero-bgV2.png") right center / cover no-repeat;
   will-change: transform;
   z-index: 0;
 }
@@ -172,7 +172,7 @@ section { padding: 96px 0; }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(4, 31, 61, .88) 0%, rgba(4, 31, 61, .55) 36%, rgba(4, 31, 61, .08) 62%, rgba(4, 31, 61, 0) 78%);
+  background: linear-gradient(90deg, rgba(4, 31, 61, .42) 0%, rgba(4, 31, 61, .14) 32%, rgba(4, 31, 61, 0) 58%);
   z-index: 1;
 }
 
@@ -501,7 +501,7 @@ a.project-item { color: inherit; text-decoration: none; display: block; }
 
   .hero-bg { background-position: center; inset: 0; }
 
-  .hero-overlay { background: linear-gradient(rgba(4, 31, 61, .78), rgba(4, 31, 61, .62)); }
+  .hero-overlay { background: linear-gradient(180deg, rgba(4, 31, 61, .62) 0%, rgba(4, 31, 61, .28) 70%, rgba(4, 31, 61, .12) 100%); }
 
   .nav-toggle { display: block; }
 
