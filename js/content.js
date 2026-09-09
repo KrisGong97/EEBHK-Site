@@ -82,6 +82,28 @@
     try { window.dispatchEvent(new CustomEvent('eebhk:business-ready')); } catch (e) { /* ignore */ }
   }
 
+  function decorateTrainCar(el) {
+    if (el.querySelector('.project-panto')) return;
+    var panto = document.createElement('div');
+    panto.className = 'project-panto';
+    panto.setAttribute('aria-hidden', 'true');
+    panto.innerHTML = '<svg viewBox="0 0 80 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="14" y="5" width="52" height="3.2" rx="1.2" fill="currentColor" stroke="none"/><path d="M18 8.2 L40 28 L62 8.2"/><path d="M24 37 L40 14 L56 37"/><path d="M28 37 L40 22 L52 37"/><path d="M40 37 V44"/><rect x="22" y="36" width="36" height="3" rx="1" fill="#9fb4c6" stroke="none"/></svg>';
+    el.insertBefore(panto, el.firstChild);
+    var left = document.createElement('span');
+    left.className = 'project-coupler is-left';
+    left.setAttribute('aria-hidden', 'true');
+    var right = document.createElement('span');
+    right.className = 'project-coupler is-right';
+    right.setAttribute('aria-hidden', 'true');
+    el.appendChild(left);
+    el.appendChild(right);
+    var bogies = document.createElement('div');
+    bogies.className = 'project-bogies';
+    bogies.setAttribute('aria-hidden', 'true');
+    bogies.innerHTML = '<span class="project-bogie"><i></i><i></i></span><span class="project-bogie"><i></i><i></i></span>';
+    el.appendChild(bogies);
+  }
+
   function initProjectCarousel(root) {
     root = root || document.querySelector('[data-project-carousel]');
     if (!root || root.getAttribute('data-ready') === '1') return;
@@ -104,6 +126,7 @@
         idx.textContent = ('0' + (i + 1)).slice(-2);
         el.insertBefore(idx, el.firstChild);
       }
+      decorateTrainCar(el);
     });
 
     root.classList.add('is-carousel');
@@ -145,6 +168,11 @@
         while (offset < 0) offset += setWidth;
       }
       track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
+      var rot = offset * 0.65;
+      var wheels = track.querySelectorAll('.project-bogie i');
+      for (var w = 0; w < wheels.length; w++) {
+        wheels[w].style.transform = 'rotate(' + rot + 'deg)';
+      }
     }
 
     function hold() {
@@ -227,7 +255,9 @@
 
     function nudge(dir) {
       hold();
-      var step = (originals[0] && originals[0].offsetWidth || 340) + 22;
+      var styles = window.getComputedStyle(track);
+      var gap = parseFloat(styles.columnGap || styles.gap) || 12;
+      var step = (originals[0] && originals[0].offsetWidth || 360) + gap;
       offset += dir * step;
       apply();
       release(2200);
