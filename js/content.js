@@ -87,20 +87,38 @@
     var panto = document.createElement('div');
     panto.className = 'project-panto';
     panto.setAttribute('aria-hidden', 'true');
-    panto.innerHTML = '<svg viewBox="0 0 80 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="14" y="5" width="52" height="3.2" rx="1.2" fill="currentColor" stroke="none"/><path d="M18 8.2 L40 28 L62 8.2"/><path d="M24 37 L40 14 L56 37"/><path d="M28 37 L40 22 L52 37"/><path d="M40 37 V44"/><rect x="22" y="36" width="36" height="3" rx="1" fill="#9fb4c6" stroke="none"/></svg>';
+    panto.innerHTML = '<svg viewBox="0 0 130 70" fill="none"><path d="M16 11 Q16 1 30 1 H100 Q114 1 114 11" fill="none" stroke="#f7f8fa" stroke-width="2.6" stroke-linecap="round"/><rect x="32" y="1.2" width="66" height="2.4" rx="1" fill="#5c656e"/><path d="M58 4 L98 28" stroke="#c5ccd3" stroke-width="2.2" stroke-linecap="round"/><circle cx="98" cy="28" r="4" fill="#4a525c" stroke="#9aa3ab" stroke-width="1"/><path d="M98 28 L56 56" stroke="#1e2329" stroke-width="6.6" stroke-linecap="round"/><rect x="42" y="55" width="32" height="4" rx="1" fill="#2f3640"/><ellipse cx="50" cy="64" rx="4.4" ry="5.6" fill="#eef1f4" stroke="#b8c0c8"/><ellipse cx="66" cy="64" rx="4.4" ry="5.6" fill="#eef1f4" stroke="#b8c0c8"/></svg>';
     el.insertBefore(panto, el.firstChild);
+    var roof = document.createElement('div');
+    roof.className = 'project-roof';
+    roof.setAttribute('aria-hidden', 'true');
+    el.appendChild(roof);
+    var band = document.createElement('div');
+    band.className = 'project-window-band';
+    band.setAttribute('aria-hidden', 'true');
+    band.innerHTML = '<span class="project-win is-door"></span><span class="project-win"></span><span class="project-win"></span><span class="project-win"></span><span class="project-win"></span><span class="project-win is-door"></span>';
+    el.appendChild(band);
+    var stripe = document.createElement('div');
+    stripe.className = 'project-stripe';
+    stripe.setAttribute('aria-hidden', 'true');
+    el.appendChild(stripe);
     var left = document.createElement('span');
-    left.className = 'project-coupler is-left';
+    left.className = 'project-gangway is-left';
     left.setAttribute('aria-hidden', 'true');
     var right = document.createElement('span');
-    right.className = 'project-coupler is-right';
+    right.className = 'project-gangway is-right';
     right.setAttribute('aria-hidden', 'true');
     el.appendChild(left);
     el.appendChild(right);
+    var gear = document.createElement('div');
+    gear.className = 'project-undergear';
+    gear.setAttribute('aria-hidden', 'true');
+    gear.innerHTML = '<span></span><span></span><span></span><span></span><span></span>';
+    el.appendChild(gear);
     var bogies = document.createElement('div');
     bogies.className = 'project-bogies';
     bogies.setAttribute('aria-hidden', 'true');
-    bogies.innerHTML = '<span class="project-bogie"><i></i><i></i></span><span class="project-bogie"><i></i><i></i></span>';
+    bogies.innerHTML = '<span class="project-bogie"><svg class="project-bogie-frame" viewBox="0 0 88 26" fill="none"><rect x="38" y="0" width="12" height="7" rx="1" fill="#3a424c"/><rect x="6" y="6" width="76" height="8" rx="2" fill="#5c656e"/><rect x="6" y="8" width="76" height="3" fill="#8b939c"/><rect x="40" y="5" width="8" height="18" rx="1" fill="#4a525c"/><rect x="42" y="7" width="4" height="14" rx="1" fill="#c5ccd3"/><ellipse cx="22" cy="14" rx="4" ry="5" fill="#6a727b"/><ellipse cx="66" cy="14" rx="4" ry="5" fill="#6a727b"/><rect x="16" y="16" width="12" height="5" rx="1" fill="#2c333c"/><rect x="60" y="16" width="12" height="5" rx="1" fill="#2c333c"/></svg><i></i><i></i></span><span class="project-bogie"><svg class="project-bogie-frame" viewBox="0 0 88 26" fill="none"><rect x="38" y="0" width="12" height="7" rx="1" fill="#3a424c"/><rect x="6" y="6" width="76" height="8" rx="2" fill="#5c656e"/><rect x="6" y="8" width="76" height="3" fill="#8b939c"/><rect x="40" y="5" width="8" height="18" rx="1" fill="#4a525c"/><rect x="42" y="7" width="4" height="14" rx="1" fill="#c5ccd3"/><ellipse cx="22" cy="14" rx="4" ry="5" fill="#6a727b"/><ellipse cx="66" cy="14" rx="4" ry="5" fill="#6a727b"/><rect x="16" y="16" width="12" height="5" rx="1" fill="#2c333c"/><rect x="60" y="16" width="12" height="5" rx="1" fill="#2c333c"/></svg><i></i><i></i></span>';
     el.appendChild(bogies);
   }
 
@@ -162,6 +180,43 @@
       setWidth = firstClone ? firstClone.offsetLeft : Math.round(track.scrollWidth / 2);
     }
 
+    function snapTrainContact() {
+      var rail = root.querySelector('.project-rail.is-near');
+      var wire = root.querySelector('.project-wire-contact');
+      var sample = track.querySelector('.project-item:not([data-clone])') || track.querySelector('.project-item');
+      if (!sample) return;
+
+      track.querySelectorAll('.project-bogies, .project-undergear').forEach(function (el) {
+        el.style.transform = '';
+      });
+      track.querySelectorAll('.project-panto').forEach(function (el) {
+        el.style.top = '';
+        el.style.height = '';
+      });
+
+      var wheel = sample.querySelector('.project-bogie i');
+      if (rail && wheel) {
+        var g = Math.round(rail.getBoundingClientRect().top - wheel.getBoundingClientRect().bottom);
+        if (g) {
+          track.querySelectorAll('.project-bogies, .project-undergear').forEach(function (el) {
+            el.style.transform = 'translateY(' + g + 'px)';
+          });
+        }
+      }
+
+      var panto = sample.querySelector('.project-panto');
+      if (wire && panto) {
+        var pg = Math.round(panto.getBoundingClientRect().top - wire.getBoundingClientRect().bottom);
+        if (pg) {
+          track.querySelectorAll('.project-panto').forEach(function (el) {
+            var top = parseFloat(window.getComputedStyle(el).top) || -55;
+            el.style.top = (top - pg) + 'px';
+            el.style.height = (el.offsetHeight + pg) + 'px';
+          });
+        }
+      }
+    }
+
     function apply() {
       if (setWidth > 0) {
         while (offset >= setWidth) offset -= setWidth;
@@ -195,6 +250,7 @@
 
     requestAnimationFrame(function () {
       measure();
+      snapTrainContact();
       apply();
       requestAnimationFrame(tick);
     });
@@ -257,7 +313,7 @@
       hold();
       var styles = window.getComputedStyle(track);
       var gap = parseFloat(styles.columnGap || styles.gap) || 12;
-      var step = (originals[0] && originals[0].offsetWidth || 360) + gap;
+      var step = (originals[0] && originals[0].offsetWidth || 500) + gap;
       offset += dir * step;
       apply();
       release(2200);
@@ -270,6 +326,7 @@
 
     window.addEventListener('resize', function () {
       measure();
+      snapTrainContact();
       apply();
     });
 
