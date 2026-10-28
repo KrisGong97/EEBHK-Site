@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香港C2318项目 DCP经验与NAS协同办公推广方案 · 汇报演示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg0:#04070D; --bg1:#0A1322;
+  --cy:#3AE2FF; --bl:#5B8CFF; --vi:#9D6BFF;
+  --gd:#F2C268; --rd:#FF6B7A; --gn:#3FE0A5;
+  --tx:#E9F1FF; --mt:#8DA2C6; --mt2:#5F7092;
+  --ln:rgba(140,170,255,.14);
+  --fz:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --fe:"Space Grotesk","Noto Sans SC","PingFang SC",sans-serif;
+  --fm:"JetBrains Mono","SF Mono",Consolas,"Courier New",monospace;
+  --ez:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg0);color:var(--tx);font-family:var(--fz);overflow:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(58,226,255,.28)}
+
+/* ============ BACKGROUND ============ */
+#bg{position:fixed;inset:0;z-index:0;opacity:.55}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(91,140,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(91,140,255,.05) 1px,transparent 1px);
+  background-size:52px 52px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 40%,#000 30%,transparent 75%);
+          mask-image:radial-gradient(ellipse 90% 80% at 50% 40%,#000 30%,transparent 75%);
+}
+.glow{position:fixed;border-radius:50%;filter:blur(110px);z-index:0;pointer-events:none;opacity:.5}
+.glow-1{width:52vw;height:52vw;left:-16vw;top:-20vw;background:radial-gradient(circle,rgba(58,226,255,.16),transparent 65%);animation:drift1 26s ease-in-out infinite alternate}
+.glow-2{width:46vw;height:46vw;right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(157,107,255,.14),transparent 65%);animation:drift2 32s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(6vw,5vw)}}
+@keyframes drift2{to{transform:translate(-5vw,-6vw)}}
+
+/* ============ CHROME ============ */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:rgba(140,170,255,.08)}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--bl),var(--vi));box-shadow:0 0 14px rgba(58,226,255,.6);transition:width .7s var(--ez)}
+.chrome{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;justify-content:space-between;align-items:center;padding:20px 30px;pointer-events:none;font-family:var(--fm);font-size:11px;letter-spacing:.14em;color:var(--mt)}
+.chrome .brand{display:flex;align-items:center;gap:10px}
+.chrome .brand b{color:var(--cy);font-weight:600}
+.chrome .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--cy);box-shadow:0 0 10px var(--cy);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+#seclbl{color:var(--mt);text-transform:uppercase}
+.badge-int{border:1px solid rgba(242,194,104,.4);color:var(--gd);padding:4px 12px;border-radius:99px;font-size:10px;letter-spacing:.2em}
+.nav{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:18px}
+.nav-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--ln);background:rgba(10,19,34,.6);backdrop-filter:blur(8px);color:var(--tx);font-size:17px;cursor:pointer;transition:all .35s var(--ez);display:grid;place-items:center}
+.nav-btn:hover{border-color:var(--cy);color:var(--cy);box-shadow:0 0 18px rgba(58,226,255,.3);transform:translateY(-2px)}
+.counter{font-family:var(--fm);font-size:12px;color:var(--mt);letter-spacing:.2em;min-width:74px;text-align:center}
+.counter b{color:var(--cy);font-weight:600}
+.hint{position:fixed;bottom:36px;right:30px;z-index:70;font-family:var(--fm);font-size:10px;letter-spacing:.16em;color:var(--mt2)}
+.beam{position:fixed;inset:0;pointer-events:none;z-index:60;background:linear-gradient(100deg,transparent 30%,rgba(58,226,255,.05) 45%,rgba(58,226,255,.13) 50%,rgba(58,226,255,.05) 55%,transparent 70%);transform:translateX(-130%)}
+.beam.run{animation:beam .85s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes beam{to{transform:translateX(130%)}}
+
+/* ============ DECK & SLIDES ============ */
+.deck{position:fixed;inset:0;z-index:10}
+@media (min-width:769px){
+  .deck{max-width:calc(100vh * 16 / 9);max-height:calc(100vw * 9 / 16);margin:auto}
+}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:66px 74px 92px;
+  opacity:0;visibility:hidden;transform:translate3d(4.5%,0,0) scale(.982);
+  transition:opacity .78s var(--ez),transform .78s var(--ez),visibility 0s linear .78s;pointer-events:none}
+.slide.is-before{transform:translate3d(-4.5%,0,0) scale(.982)}
+.slide.active{opacity:1;visibility:visible;transform:none;pointer-events:auto;z-index:2;transition:opacity .78s var(--ez),transform .78s var(--ez),visibility 0s}
+.wrap{width:100%;max-width:1180px;max-height:100%;display:flex;flex-direction:column;justify-content:center;gap:18px}
+
+/* reveal stagger */
+[data-rv]{opacity:0;transform:translateY(26px);transition:opacity .72s var(--ez),transform .72s var(--ez);transition-delay:calc(140ms + var(--i,0)*90ms)}
+.slide.active [data-rv]{opacity:1;transform:none}
+.slide:not(.active) [data-rv]{transition-delay:0ms;transition-duration:.3s}
+
+/* ============ TYPO ============ */
+.kicker{font-family:var(--fm);font-size:12px;letter-spacing:.34em;color:var(--cy);text-transform:uppercase;display:flex;align-items:center;gap:12px}
+.kicker::before{content:'';width:34px;height:1px;background:linear-gradient(90deg,var(--cy),transparent)}
+.title{font-size:clamp(26px,3.1vw,42px);font-weight:700;line-height:1.2;letter-spacing:.01em}
+.title em{font-style:normal;background:linear-gradient(100deg,var(--cy),var(--bl) 55%,var(--vi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--mt);font-size:clamp(13px,1.15vw,16px);line-height:1.75}
+.mono{font-family:var(--fm)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:var(--fm);letter-spacing:.12em;color:var(--gd);border:1px solid rgba(242,194,104,.45);padding:4px 12px;border-radius:99px;width:fit-content}
+
+/* ============ COMPONENTS ============ */
+.card{background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border:1px solid var(--ln);border-radius:16px;padding:20px 22px;backdrop-filter:blur(8px);transition:transform .45s var(--ez),border-color .45s,box-shadow .45s}
+.card:hover{transform:translateY(-3px);border-color:rgba(58,226,255,.4);box-shadow:0 14px 40px -18px rgba(58,226,255,.35)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card p{font-size:13px;color:var(--mt);line-height:1.7}
+.card.gold{border-color:rgba(242,194,104,.35);background:linear-gradient(160deg,rgba(242,194,104,.09),rgba(255,255,255,.02))}
+.card.red{border-color:rgba(255,107,122,.35)}
+.card.cy{border-color:rgba(58,226,255,.3)}
+.num-badge{font-family:var(--fe);font-size:15px;font-weight:700;color:var(--cy);border:1px solid rgba(58,226,255,.4);border-radius:9px;min-width:34px;height:34px;display:inline-grid;place-items:center;flex:none;background:rgba(58,226,255,.07)}
+.gold .num-badge{color:var(--gd);border-color:rgba(242,194,104,.5);background:rgba(242,194,104,.08)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+.banner{border:1px solid rgba(242,194,104,.4);background:linear-gradient(90deg,rgba(242,194,104,.12),rgba(242,194,104,.03));border-radius:14px;padding:15px 22px;font-size:15px;color:#F7DCA6;line-height:1.7;display:flex;gap:12px;align-items:center}
+.banner b{color:var(--gd)}
+.banner.cy{border-color:rgba(58,226,255,.35);background:linear-gradient(90deg,rgba(58,226,255,.1),rgba(58,226,255,.02));color:#C6F3FF}
+.banner.cy b{color:var(--cy)}
+.banner.red{border-color:rgba(255,107,122,.4);background:linear-gradient(90deg,rgba(255,107,122,.1),rgba(255,107,122,.02));color:#FFD4DA}
+.banner.red b{color:var(--rd)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font-family:var(--fm);font-size:11.5px;letter-spacing:.04em;color:var(--mt);border:1px solid var(--ln);border-radius:99px;padding:6px 14px;background:rgba(255,255,255,.03)}
+.chip.cy{color:var(--cy);border-color:rgba(58,226,255,.35)}
+.chip.rd{color:var(--rd);border-color:rgba(255,107,122,.4);text-decoration:line-through}
+.chip.gd{color:var(--gd);border-color:rgba(242,194,104,.4)}
+ul.rows{list-style:none;display:flex;flex-direction:column;gap:12px}
+ul.rows li{display:flex;gap:14px;align-items:flex-start;font-size:14px;line-height:1.7;color:var(--mt)}
+ul.rows li b{color:var(--tx);font-weight:600}
+ul.rows li::before{content:'';flex:none;width:7px;height:7px;margin-top:9px;border-radius:2px;background:var(--cy);box-shadow:0 0 8px rgba(58,226,255,.7);transform:rotate(45deg)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:var(--fm);font-size:11px;letter-spacing:.16em;color:var(--cy);text-align:left;padding:10px 14px;border-bottom:1px solid rgba(58,226,255,.3);font-weight:600}
+.tbl td{padding:10px 14px;border-bottom:1px solid rgba(140,170,255,.09);color:var(--mt);line-height:1.6;vertical-align:top}
+.tbl td:first-child{color:var(--tx);font-weight:500;white-space:nowrap}
+.tbl tr:hover td{background:rgba(58,226,255,.04)}
+.bdg{font-family:var(--fm);font-size:10px;letter-spacing:.1em;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.bdg.hi{color:var(--rd);border:1px solid rgba(255,107,122,.5)}
+.bdg.mh{color:var(--gd);border:1px solid rgba(242,194,104,.5)}
+.bdg.md{color:var(--cy);border:1px solid rgba(58,226,255,.45)}
+.bdg.lo{color:var(--gn);border:1px solid rgba(63,224,165,.45)}
+
+/* metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.metric{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid var(--ln);border-radius:18px;padding:24px 20px;text-align:left;position:relative;overflow:hidden}
+.metric::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cy),transparent)}
+.metric .n{font-family:var(--fe);font-weight:700;font-size:clamp(34px,3.6vw,52px);line-height:1;background:linear-gradient(100deg,var(--cy),var(--bl));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:baseline;gap:4px}
+.metric .n small{font-size:.42em;-webkit-text-fill-color:var(--mt);font-family:var(--fm);font-weight:400}
+.metric .l{margin-top:10px;font-size:12.5px;color:var(--mt);line-height:1.6}
+
+/* flow */
+.flow{display:flex;align-items:stretch;gap:0}
+.fnode{flex:1;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--ln);border-radius:14px;padding:16px 14px;text-align:center}
+.fnode h4{font-size:14px;margin-bottom:5px}
+.fnode p{font-size:11.5px;color:var(--mt);line-height:1.55}
+.fnode.cy{border-color:rgba(58,226,255,.45);box-shadow:0 0 24px -8px rgba(58,226,255,.4)}
+.farr{align-self:center;padding:0 8px;color:var(--cy);font-size:20px;animation:arr 1.6s ease-in-out infinite;font-family:var(--fe)}
+@keyframes arr{50%{transform:translateX(5px);opacity:.5}}
+
+/* ============ COVER ============ */
+.cover{text-align:center}
+.cover .wrap{align-items:center;gap:26px}
+.hero-kick{font-family:var(--fm);font-size:12px;letter-spacing:.4em;color:var(--mt)}
+.hero-kick b{color:var(--gd);font-weight:600}
+.hero-title{font-size:clamp(34px,4.4vw,62px);font-weight:900;line-height:1.28;letter-spacing:.02em}
+.hero-title em{display:block;font-style:normal;background:linear-gradient(100deg,var(--cy) 10%,var(--bl) 55%,var(--vi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:clamp(13px,1.2vw,16px);color:var(--mt);letter-spacing:.06em;line-height:1.9}
+.hero-sub .mono{font-size:.85em;color:var(--mt2)}
+.hero-meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.ring{position:absolute;right:-160px;top:50%;width:560px;height:560px;transform:translateY(-50%);border:1px dashed rgba(58,226,255,.22);border-radius:50%;animation:spin 90s linear infinite;pointer-events:none}
+.ring::before{content:'';position:absolute;inset:70px;border:1px solid rgba(91,140,255,.14);border-radius:50%}
+.ring::after{content:'';position:absolute;inset:150px;border:1px dashed rgba(157,107,255,.18);border-radius:50%;animation:spin 60s linear infinite reverse}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+.ticker{position:absolute;bottom:0;left:0;right:0;overflow:hidden;border-top:1px solid var(--ln);padding:13px 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.ticker-track{display:flex;gap:56px;white-space:nowrap;animation:tick 36s linear infinite;width:max-content}
+.ticker-track span{font-family:var(--fm);font-size:11px;letter-spacing:.22em;color:var(--mt2)}
+.ticker-track span b{color:rgba(58,226,255,.55);font-weight:400;margin-right:14px}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* ============ DIVIDER ============ */
+.divider .wrap{flex-direction:row;align-items:center;gap:56px}
+.giant{font-family:var(--fe);font-weight:700;font-size:clamp(130px,17vw,250px);line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(58,226,255,.4);position:relative;flex:none;user-select:none}
+.giant::after{content:attr(data-n);position:absolute;inset:0;background:linear-gradient(180deg,rgba(58,226,255,.35),transparent 70%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:0}
+.dv-body{display:flex;flex-direction:column;gap:16px}
+.dv-title{font-size:clamp(30px,3.6vw,50px);font-weight:900}
+.dv-sub{font-family:var(--fm);font-size:12px;letter-spacing:.3em;color:var(--mt)}
+.secmap{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.secmap span{font-family:var(--fm);font-size:10.5px;letter-spacing:.08em;color:var(--mt2);border:1px solid rgba(140,170,255,.12);padding:5px 11px;border-radius:99px;transition:all .4s}
+.secmap span.on{color:var(--cy);border-color:rgba(58,226,255,.55);background:rgba(58,226,255,.08);box-shadow:0 0 16px -4px rgba(58,226,255,.5)}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;align-content:center}
+.mod{display:flex;align-items:center;gap:12px;border:1px solid var(--ln);border-radius:12px;padding:11px 16px;font-size:13px;background:rgba(255,255,255,.025)}
+.mod i{font-style:normal;font-family:var(--fe);font-weight:700;color:var(--cy);font-size:12px;opacity:.85}
+.mod.star{border-color:rgba(242,194,104,.5);background:rgba(242,194,104,.06)}
+.mod.star i{color:var(--gd)}
+
+/* ============ NAMING HERO ============ */
+.fname{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;font-family:var(--fm);font-weight:800;font-size:clamp(17px,2.5vw,34px);letter-spacing:.02em;margin:6px 0 2px}
+.fname .seg{color:var(--c);text-shadow:0 0 22px color-mix(in srgb,var(--c) 55%,transparent);padding:2px 2px}
+.fname .dh{color:var(--mt2);font-weight:400}
+.fname .ext{color:var(--mt);font-weight:400;font-size:.72em}
+.flegend{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.fcell{border-top:2px solid var(--c);padding:9px 4px 0;text-align:center}
+.fcell b{display:block;font-family:var(--fe);font-size:12.5px;color:var(--tx);margin-bottom:3px}
+.fcell span{font-size:11px;color:var(--mt);line-height:1.5;display:block}
+.readline{text-align:center;font-size:13.5px;color:var(--mt);line-height:1.8}
+.readline b{color:var(--tx)}
+
+/* status codes */
+.stcode{display:flex;align-items:center;gap:12px;padding:8px 14px;border:1px solid var(--ln);border-radius:11px;font-size:12.5px;background:rgba(255,255,255,.025)}
+.stcode code{font-family:var(--fm);font-weight:800;color:var(--cy);font-size:13px;min-width:34px}
+.stcode span{color:var(--mt)}
+.stcode b{color:var(--tx);font-weight:500}
+.stcode.a1{border-color:rgba(63,224,165,.55);background:rgba(63,224,165,.08);box-shadow:0 0 22px -8px rgba(63,224,165,.5)}
+.stcode.a1 code{color:var(--gn)}
+.stcode.dim{opacity:.62}
+.codes-col{display:flex;flex-direction:column;gap:8px}
+
+/* return codes */
+.rcodes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.rcode{border:1px solid var(--ln);border-radius:14px;padding:16px;text-align:center;background:rgba(255,255,255,.03)}
+.rcode .c{font-family:var(--fe);font-weight:700;font-size:30px;margin-bottom:6px}
+.rcode h4{font-size:14px;margin-bottom:4px}
+.rcode p{font-size:11.5px;color:var(--mt);line-height:1.6}
+.rcode.a .c{color:var(--gn)} .rcode.b .c{color:var(--cy)} .rcode.c .c{color:var(--gd)} .rcode.d .c{color:var(--rd)}
+
+/* arch diagram */
+.arch{display:flex;flex-direction:column;align-items:center;width:100%}
+.anode{width:100%;border:1px solid rgba(58,226,255,.35);border-radius:14px;padding:13px 18px;background:linear-gradient(160deg,rgba(58,226,255,.09),rgba(10,19,34,.5));text-align:center}
+.anode h4{font-size:14px;margin-bottom:3px}
+.anode p{font-size:11px;color:var(--mt);font-family:var(--fm);letter-spacing:.04em}
+.anode.hq{border-color:rgba(157,107,255,.45);background:linear-gradient(160deg,rgba(157,107,255,.1),rgba(10,19,34,.5))}
+.anode.bk{border-color:rgba(91,140,255,.4);background:linear-gradient(160deg,rgba(91,140,255,.1),rgba(10,19,34,.5))}
+.alink{position:relative;width:2px;height:40px;background:repeating-linear-gradient(180deg,rgba(58,226,255,.55) 0 5px,transparent 5px 10px)}
+.alink::after{content:'';position:absolute;left:50%;top:0;width:7px;height:7px;border-radius:50%;background:var(--cy);box-shadow:0 0 10px var(--cy);transform:translateX(-50%);animation:flowdot 2s linear infinite}
+@keyframes flowdot{to{top:calc(100% - 7px)}}
+.alink .lbl{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--mt);white-space:nowrap}
+.fan{position:relative;width:82%;margin-top:4px;padding-top:14px;display:flex;justify-content:space-between}
+.fan::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(58,226,255,.5),transparent)}
+.fan span{position:relative;font-size:11px;color:var(--mt);border:1px solid var(--ln);border-radius:99px;padding:6px 13px;background:rgba(255,255,255,.03)}
+.fan span::before{content:'';position:absolute;top:-14px;left:50%;width:1px;height:14px;background:rgba(58,226,255,.4)}
+
+/* steps timeline */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative;padding-top:34px}
+.steps::before{content:'';position:absolute;top:13px;left:8%;right:8%;height:2px;background:linear-gradient(90deg,var(--cy),var(--bl),var(--vi));transform:scaleX(0);transform-origin:left;transition:transform 1.2s var(--ez) .5s;box-shadow:0 0 12px rgba(58,226,255,.5)}
+.slide.active .steps::before{transform:scaleX(1)}
+.step{position:relative}
+.step .dot{position:absolute;top:-34px;left:0;width:28px;height:28px;border-radius:50%;border:2px solid var(--cy);background:var(--bg0);display:grid;place-items:center;font-family:var(--fe);font-weight:700;font-size:12px;color:var(--cy);box-shadow:0 0 16px rgba(58,226,255,.4)}
+.steps4{grid-template-columns:repeat(4,1fr)}
+
+/* decision cards */
+.dcards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dcard{position:relative;border:1px solid rgba(242,194,104,.3);border-radius:18px;padding:24px 24px 20px 86px;background:linear-gradient(160deg,rgba(242,194,104,.07),rgba(255,255,255,.02));transition:transform .45s var(--ez),box-shadow .45s}
+.dcard:hover{transform:translateY(-4px);box-shadow:0 18px 46px -20px rgba(242,194,104,.4)}
+.dcard .dn{position:absolute;left:22px;top:20px;font-family:var(--fe);font-weight:700;font-size:34px;background:linear-gradient(180deg,var(--gd),#B8863B);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.dcard h3{font-size:17px;margin-bottom:8px;color:#F7DCA6}
+.dcard p{font-size:13px;color:var(--mt);line-height:1.75}
+.dcard p b{color:var(--tx)}
+
+/* quote */
+.quote{position:relative;text-align:center;max-width:900px}
+.quote::before{content:'“';position:absolute;top:-88px;left:50%;transform:translateX(-50%);font-family:var(--fe);font-size:150px;color:rgba(58,226,255,.16);line-height:1}
+.quote p{font-size:clamp(20px,2.2vw,30px);line-height:2;font-weight:500}
+.quote p em{font-style:normal;color:var(--cy)}
+.thanks{font-family:var(--fe);font-size:clamp(24px,2.6vw,38px);font-weight:700;letter-spacing:.14em;background:linear-gradient(100deg,var(--cy),var(--vi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* overview */
+.ov{position:fixed;inset:0;z-index:120;background:rgba(4,7,13,.88);backdrop-filter:blur(14px);display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .4s var(--ez),visibility 0s linear .4s}
+.ov.open{opacity:1;visibility:visible;transition:opacity .4s var(--ez)}
+.ov-box{width:min(1020px,88vw);max-height:82vh;overflow:auto;padding:34px;border:1px solid var(--ln);border-radius:22px;background:rgba(10,19,34,.7)}
+.ov-box h3{font-family:var(--fm);font-size:12px;letter-spacing:.3em;color:var(--cy);margin-bottom:20px}
+.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ov-item{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--ln);border-radius:11px;padding:11px 13px;background:rgba(255,255,255,.03);color:var(--mt);font-size:12px;cursor:pointer;transition:all .3s;font-family:var(--fz)}
+.ov-item:hover{border-color:var(--cy);color:var(--tx);background:rgba(58,226,255,.07)}
+.ov-item .ov-num{font-family:var(--fe);font-weight:700;color:var(--cy);font-size:12px;flex:none}
+
+/* vs banner */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.vs .side{border-radius:16px;padding:18px 22px;border:1px solid var(--ln)}
+.vs .side.hk{border-color:rgba(58,226,255,.4);background:linear-gradient(160deg,rgba(58,226,255,.08),transparent)}
+.vs .side.ml{border-color:rgba(242,194,104,.35);background:linear-gradient(160deg,rgba(242,194,104,.07),transparent)}
+.vs .side h4{font-size:15px;margin-bottom:6px}
+.vs .side p{font-size:12.5px;color:var(--mt);line-height:1.7}
+.vs .x{align-self:center;font-family:var(--fe);font-weight:700;font-size:22px;color:var(--mt2);border:1px solid var(--ln);width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.03)}
+
+/* 61 big number */
+.big61{font-family:var(--fe);font-weight:700;font-size:clamp(110px,13vw,190px);line-height:.95;background:linear-gradient(180deg,var(--gd),#A8782F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 34px rgba(242,194,104,.35))}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv .card{padding:15px 18px}
+.kv .card h3{font-size:14px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.split-58{grid-template-columns:1.15fr .85fr}
+.split-45{grid-template-columns:.9fr 1.1fr}
+
+/* responsive */
+@media (max-width:900px){
+  .slide{padding:56px 26px 86px}
+  .g3,.g5,.metrics,.rcodes,.steps,.steps4{grid-template-columns:1fr 1fr}
+  .split,.split-58,.split-45,.dcards,.g2{grid-template-columns:1fr}
+  .flegend{grid-template-columns:repeat(4,1fr)}
+  .divider .wrap{flex-direction:column;gap:20px;text-align:center;align-items:center}
+  .mod-grid{grid-template-columns:1fr 1fr}
+  .ring{display:none}.hint{display:none}
+  .ov-grid{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.15s!important}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="grid-bg"></div>
+<div class="glow glow-1"></div><div class="glow glow-2"></div>
+<div class="beam" id="beam"></div>
+
+<div class="progress"><div class="progress-fill" id="pfill"></div></div>
+<header class="chrome">
+  <div class="brand"><span class="dot"></span><b>EEB</b><span style="color:var(--mt2)">/</span>安全质量环保部</div>
+  <div id="seclbl">COVER</div>
+  <div class="badge-int">内部汇报 · 建议稿</div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- S1 COVER -->
+<section class="slide cover" data-section="COVER · 封面" data-title="封面">
+  <div class="ring"></div>
+  <div class="wrap">
+    <div class="hero-kick" data-rv style="--i:0">内部汇报 · 建议稿　<b>INTERNAL BRIEFING</b>　2026.10</div>
+    <h1 class="hero-title" data-rv style="--i:1">文件控制计划（DCP）实施经验<em>与 NAS 协同办公推广方案</em></h1>
+    <p class="hero-sub" data-rv style="--i:2">香港 C2318 项目的管理实践，与内地落地路径<br><span class="mono">DOCUMENT CONTROL PLAN × NETWORK ATTACHED STORAGE</span></p>
+    <div class="hero-meta" data-rv style="--i:3">
+      <span class="chip cy">汇报单位 · 安全质量环保部</span>
+      <span class="chip">汇报人 · 巩 略</span>
+      <span class="chip">适用 · 公司领导 / 工程管理部 / 技术中心 / 各项目部</span>
+    </div>
+  </div>
+  <div class="ticker"><div class="ticker-track">
+    <span><b>◆</b>DCP 文件控制计划</span><span><b>◆</b>ISO 19650</span><span><b>◆</b>BS 1192 字段化命名</span><span><b>◆</b>C2318-19E</span><span><b>◆</b>TRANSMITTAL 提交单</span><span><b>◆</b>STATUS CODE 状态码</span><span><b>◆</b>NAS 协同办公</span><span><b>◆</b>3-2-1 备份原则</span><span><b>◆</b>SNAPSHOT 快照</span><span><b>◆</b>61号令 · 异地异质备份</span><span><b>◆</b>SSOT 唯一数据源</span>
+    <span><b>◆</b>DCP 文件控制计划</span><span><b>◆</b>ISO 19650</span><span><b>◆</b>BS 1192 字段化命名</span><span><b>◆</b>C2318-19E</span><span><b>◆</b>TRANSMITTAL 提交单</span><span><b>◆</b>STATUS CODE 状态码</span><span><b>◆</b>NAS 协同办公</span><span><b>◆</b>3-2-1 备份原则</span><span><b>◆</b>SNAPSHOT 快照</span><span><b>◆</b>61号令 · 异地异质备份</span><span><b>◆</b>SSOT 唯一数据源</span>
+  </div></div>
+</section>
+
+<!-- S2 核心结论 -->
+<section class="slide" data-section="核心结论 · KEY MESSAGE" data-title="核心结论">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">KEY MESSAGE · 先说清楚</div>
+    <h2 class="title" data-rv style="--i:1">核心结论 <em>五条</em></h2>
+    <ul class="rows" style="gap:14px">
+      <li data-rv style="--i:2"><span class="num-badge">1</span><span><b>文件控制不是"资料员的活"，是项目管理的基础设施。</b>它决定争议时有没有证据、竣工移交时返不返工、人员更替时知识归不归零。</span></li>
+      <li data-rv style="--i:3"><span class="num-badge" style="color:var(--gd);border-color:rgba(242,194,104,.5);background:rgba(242,194,104,.08)">2</span><span><b>现在推行，时机正好。</b>61 号令已于 <b style="color:var(--gd)">2026-09-01 施行</b>，与 DCP 体系高度重合 —— 不是额外加活，是新规要求必须这么干。</span></li>
+      <li data-rv style="--i:4"><span class="num-badge">3</span><span><b>制度与工具必须配套。</b>制度定规则，NAS 保执行。只发制度不给工具，三个月后现场就会回到"新建文件夹(2)"。</span></li>
+      <li data-rv style="--i:5"><span class="num-badge">4</span><span><b>先试点、再推广。</b>选 1～2 个新开工项目试运行 6 个月，形成公司级管理办法后全面推开。</span></li>
+      <li data-rv style="--i:6"><span class="num-badge">5</span><span><b>一条诚实的边界：</b>NAS 解决不了"多人同时编辑同一份文件" —— 那是云文档的活。边界已讲清（5.9），避免预期落差。</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- S3 提纲 -->
+<section class="slide" data-section="汇报提纲 · AGENDA" data-title="汇报提纲">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">AGENDA · 一页纸</div>
+    <h2 class="title" data-rv style="--i:1">汇报提纲 <em>七个部分</em></h2>
+    <div class="grid g2" style="gap:12px">
+      <div class="card" data-rv style="--i:2" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">01</span>项目背景与 DCP 的由来</h3><p style="margin-top:6px">为什么港铁开工第一件事就要这个文件</p></div>
+      <div class="card" data-rv style="--i:3" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">02</span>DCP 规范要点</h3><p style="margin-top:6px">十个核心模块：命名规则、版次控制、审批代码</p></div>
+      <div class="card" data-rv style="--i:4" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">03</span>管理效益</h3><p style="margin-top:6px">这套东西值多少钱，不做的代价是什么</p></div>
+      <div class="card" data-rv style="--i:5" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">04</span>内地推行</h3><p style="margin-top:6px">两地差异、政策依据、关键矛盾与落地路径</p></div>
+      <div class="card" data-rv style="--i:6" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">05</span>NAS 协同办公平台</h3><p style="margin-top:6px">定位、架构、目录、权限、备份、局限</p></div>
+      <div class="card" data-rv style="--i:7" style="padding:14px 18px"><h3 style="font-size:14px;margin:0"><span class="num-badge" style="min-width:28px;height:28px;font-size:12px">06</span>实施计划 ＋ 07 决策事项</h3><p style="margin-top:6px">试点选择、三步走、分工风险；请领导决策四件事</p></div>
+    </div>
+    <div class="banner cy" data-rv style="--i:8">一至四部分讲"<b>香港怎么管、内地怎么落地</b>"，第五部分讲"<b>用什么工具承载</b>" —— 一套办法的两条腿，建议一并研究，不要拆开看。</div>
+  </div>
+</section>
+
+<!-- S4 DIVIDER 01 -->
+<section class="slide divider" data-section="PART 01 · 项目背景" data-title="第一部分 · 项目背景">
+  <div class="wrap">
+    <div class="giant" data-n="01" data-rv style="--i:0">01</div>
+    <div class="dv-body">
+      <div class="kicker" data-rv style="--i:1">PART 01 · BACKGROUND</div>
+      <h2 class="dv-title" data-rv style="--i:2">项目背景与 DCP 的由来</h2>
+      <p class="lead" data-rv style="--i:3">为什么港铁开工第一件事，就要这个文件？</p>
+      <div class="secmap" data-rv style="--i:4"><span class="on">01 背景</span><span>02 要点</span><span>03 效益</span><span>04 推行</span><span>05 NAS</span><span>06 计划</span><span>07 决策</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S5 项目概况 -->
+<section class="slide" data-section="PART 01 · 项目背景" data-title="C2318 项目概况">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">PART 01 · PROJECT FACTS</div>
+    <h2 class="title" data-rv style="--i:1">C2318 —— 在运营中的地铁线路上<em>做原位改造</em></h2>
+    <div class="metrics">
+      <div class="metric" data-rv style="--i:2"><div class="n"><small>HK$</small><span class="num" data-to="30.3" data-dec="1">0</span><small>亿</small></div><div class="l">合约金额（3,032,260,000 港元）<br>批出日期 2020-03-16</div></div>
+      <div class="metric" data-rv style="--i:3"><div class="n"><span class="num" data-to="39">0</span><small>个</small></div><div class="l">车站（含设备房）<br>3 条运营线路 KTL / TWL / ISL</div></div>
+      <div class="metric" data-rv style="--i:4"><div class="n"><span class="num" data-to="49.6" data-dec="1">0</span><small>km</small></div><div class="l">运营线路长度<br>既有高低压系统原位更新升级</div></div>
+      <div class="metric" data-rv style="--i:5"><div class="n"><span class="num" data-to="10">0</span><small>年</small></div><div class="l">合约工期 2020 → 2030<br>人员必然大量更替</div></div>
+    </div>
+    <div class="chips" data-rv style="--i:6">
+      <span class="chip cy">合约编号 C2318-19E</span>
+      <span class="chip">EEB–GTECH 联营体承建</span>
+      <span class="chip">11kV 整体升压至 33kV</span>
+      <span class="chip">设计 · 制造 · 供货 · 安装 · 测试调试 · 维护 · 退运拆解 · 培训</span>
+    </div>
+    <p class="lead" data-rv style="--i:7" style="font-size:12px">数据来源：港铁官网《已批出合约公告（2020 年 3 月）》；中铁电气化局集团官网相关公告。</p>
+  </div>
+</section>
+
+<!-- S6 文件量为何特别大 -->
+<section class="slide" data-section="PART 01 · 项目背景" data-title="文件量为何特别大">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">WHY IT MATTERS</div>
+    <h2 class="title" data-rv style="--i:1">这个项目的文件量，<em>为什么"特别大"</em></h2>
+    <div class="grid g3" style="grid-template-columns:repeat(5,1fr)">
+      <div class="card" data-rv style="--i:2"><h3 style="font-size:14px">点多 · 面广 · 线长</h3><p>3 线 39 站，每站独立图纸、方案、停电倒接、验收记录</p></div>
+      <div class="card" data-rv style="--i:3"><h3 style="font-size:14px">接口极多</h3><p>与港铁车务、供电、信号、消防、站务多部门往来，次次要文件</p></div>
+      <div class="card" data-rv style="--i:4"><h3 style="font-size:14px">窗口极窄</h3><p>仅夜间非运营时段作业；方案批不下，当晚窗口就废</p></div>
+      <div class="card" data-rv style="--i:5"><h3 style="font-size:14px">周期十年</h3><p>人员换三轮，文件是唯一不会离职的员工</p></div>
+      <div class="card" data-rv style="--i:6"><h3 style="font-size:14px">联营体模式</h3><p>两个法人、两地团队，文件是唯一的共同语言</p></div>
+    </div>
+    <div class="banner red" data-rv style="--i:7">在这种项目上，文件管不好，不是"资料乱" —— 而是<b>直接影响产值和工期</b>。</div>
+  </div>
+</section>
+
+<!-- S7 DCP 合同定位 -->
+<section class="slide" data-section="PART 01 · 项目背景" data-title="DCP 的合同定位">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">CONTRACTUAL REQUIREMENT</div>
+    <h2 class="title" data-rv style="--i:1">DCP 在合同中的定位 —— <em>不是建议，是义务</em></h2>
+    <div class="split split-45">
+      <div class="metric" data-rv style="--i:2" style="text-align:center;padding:28px 20px">
+        <div class="n" style="justify-content:center"><span class="num" data-to="28">0</span><small>天</small></div>
+        <div class="l" style="margin-top:12px">合同生效后 28～30 天内<br>必须提交 DCP 报业主审批</div>
+      </div>
+      <ul class="rows" data-rv style="--i:3">
+        <li><b>提交前不能正式开工</b>（或影响开工令）</li>
+        <li>审批通过即成为<b>履约依据</b>，业主和监理按方案检查承包商</li>
+        <li>违反方案（命名违规、版次失控、审批超期）构成<b>不符合项 NCR</b>，计入履约评价</li>
+        <li>内地"资料管理办法"多为内部制度，松紧自定；香港把它变成了<b>合同条款的延伸</b></li>
+      </ul>
+    </div>
+    <div class="banner" data-rv style="--i:4"><b>启示：</b>推行时只发文、不纳入合同和考核，执行力必然大打折扣 —— 建议在分包合同、项目部考核中同步嵌入（见第四部分）。</div>
+  </div>
+</section>
+
+<!-- S8 DIVIDER 02 + 10 modules -->
+<section class="slide divider" data-section="PART 02 · DCP 规范要点" data-title="第二部分 · 十个核心模块">
+  <div class="wrap">
+    <div class="dv-body" style="max-width:400px">
+      <div class="giant" data-n="02" data-rv style="--i:0" style="font-size:clamp(100px,12vw,180px)">02</div>
+      <div class="kicker" data-rv style="--i:1">PART 02 · KEY POINTS</div>
+      <h2 class="dv-title" data-rv style="--i:2">DCP 规范要点</h2>
+      <p class="lead" data-rv style="--i:3">人家到底怎么管的 —— 十个核心模块，本次汇报的主要篇幅，也是内地推行可直接移植的部分。</p>
+      <div class="secmap" data-rv style="--i:4"><span>01 背景</span><span class="on">02 要点</span><span>03 效益</span><span>04 推行</span><span>05 NAS</span><span>06 计划</span><span>07 决策</span></div>
+    </div>
+    <div class="mod-grid">
+      <div class="mod" data-rv style="--i:3"><i>2.1</i>文件分类体系</div>
+      <div class="mod" data-rv style="--i:4"><i>2.2</i>Document Controller 岗位</div>
+      <div class="mod" data-rv style="--i:5"><i>2.3</i>文件夹结构</div>
+      <div class="mod star" data-rv style="--i:6"><i>2.4 ★</i>文件命名规则</div>
+      <div class="mod" data-rv style="--i:7"><i>2.5</i>编号与版次</div>
+      <div class="mod" data-rv style="--i:8"><i>2.6</i>状态码 Status Code</div>
+      <div class="mod" data-rv style="--i:9"><i>2.7</i>提交与审批流程</div>
+      <div class="mod" data-rv style="--i:10"><i>2.8</i>格式与元数据</div>
+      <div class="mod" data-rv style="--i:11"><i>2.9</i>归档与竣工移交</div>
+      <div class="mod" data-rv style="--i:12"><i>2.10</i>考核与审计</div>
+    </div>
+  </div>
+</section>
+
+<!-- S9 命名规则 HERO -->
+<section class="slide" data-section="PART 02 · DCP 规范要点" data-title="命名规则 ★">
+  <div class="wrap" style="gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="kicker" data-rv style="--i:0">2.4 · FIELD-BASED NAMING</div>
+      <span class="tag" data-rv style="--i:1">★ 领导最关心的规则细节</span>
+    </div>
+    <h2 class="title" data-rv style="--i:1">文件命名规则 —— <em>位置决定含义</em>，不看内容读出全部属性</h2>
+    <div class="fname" data-rv style="--i:2">
+      <span class="seg" style="--c:#3AE2FF">C2318</span><span class="dh">-</span><span class="seg" style="--c:#5B8CFF">EEB</span><span class="dh">-</span><span class="seg" style="--c:#9D6BFF">ELE</span><span class="dh">-</span><span class="seg" style="--c:#3FE0A5">DWG</span><span class="dh">-</span><span class="seg" style="--c:#F2C268">KTL-ST05</span><span class="dh">-</span><span class="seg" style="--c:#FF9F6B">0001</span><span class="dh">-</span><span class="seg" style="--c:#FF6B7A">C03</span><span class="ext">.pdf</span>
+    </div>
+    <div class="flegend" data-rv style="--i:3">
+      <div class="fcell" style="--c:#3AE2FF"><b>Project</b><span>项目 / 合约代码</span></div>
+      <div class="fcell" style="--c:#5B8CFF"><b>Originator</b><span>发起方（谁出的）</span></div>
+      <div class="fcell" style="--c:#9D6BFF"><b>Discipline</b><span>专业（ELE 供电）</span></div>
+      <div class="fcell" style="--c:#3FE0A5"><b>Type</b><span>类型（DWG 图纸）</span></div>
+      <div class="fcell" style="--c:#F2C268"><b>Zone</b><span>位置（观塘线 05 站）</span></div>
+      <div class="fcell" style="--c:#FF9F6B"><b>Number</b><span>流水号（不跳号）</span></div>
+      <div class="fcell" style="--c:#FF6B7A"><b>Revision</b><span>版次（施工版第 3 次）</span></div>
+    </div>
+    <p class="readline" data-rv style="--i:4">读法：<b>C2318 合约</b>下，中铁电气化局出的，<b>供电专业 · 图纸</b>，观塘线第 05 站，第 0001 号，施工版第 3 次。　<span class="mono" style="font-size:11px;color:var(--mt2)">源自 BS 1192 → ISO 19650</span></p>
+    <div class="chips" data-rv style="--i:5">
+      <span class="chip cy">只用 ASCII</span><span class="chip cy">字段定长补零</span><span class="chip cy">位置固定</span><span class="chip cy">流水号 DC 统一发放</span><span class="chip cy">版次在末尾</span><span class="chip cy">与登记册一致</span>
+    </div>
+    <div class="chips" data-rv style="--i:6">
+      <span class="chip rd">某某站供电改造图最终版.dwg</span>
+      <span class="chip rd">最终版2.dwg</span>
+      <span class="chip rd">（真正最终）.dwg</span>
+      <span class="chip rd">新建 Microsoft Word 文档.docx</span>
+    </div>
+  </div>
+</section>
+
+<!-- S10 版次与状态码 -->
+<section class="slide" data-section="PART 02 · DCP 规范要点" data-title="版次与状态码">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">2.5 / 2.6 · REVISION & STATUS</div>
+    <h2 class="title" data-rv style="--i:1">版次回答"第几版"，<em>状态码回答"这版能干什么"</em></h2>
+    <div class="split">
+      <div class="codes-col">
+        <div class="stcode" data-rv style="--i:2"><code>P01</code><span><b>Preliminary 初步版</b> · 内部讨论，不具约束力</span></div>
+        <div class="stcode" data-rv style="--i:3"><code>C01</code><span><b>Construction 施工版</b> · 报业主审批、用于施工</span></div>
+        <div class="stcode" data-rv style="--i:4"><code>AB</code><span><b>As-Built 竣工版</b> · 竣工移交</span></div>
+        <div class="stcode dim" data-rv style="--i:5"><code>W</code><span><b>Withdrawn 撤回版</b> · 须标注原因</span></div>
+        <div class="banner cy" data-rv style="--i:6" style="font-size:12.5px;padding:12px 16px">新版发布即自动作废旧版，移入 <b>99_Superseded</b> 保留 —— 不得覆盖、不得删除。</div>
+      </div>
+      <div class="codes-col">
+        <div class="stcode dim" data-rv style="--i:2"><code>S0</code><span>初始状态，未完成</span></div>
+        <div class="stcode dim" data-rv style="--i:3"><code>S1–S2</code><span>可供协调 / 仅供参考 —— <b>不能据以施工</b></span></div>
+        <div class="stcode dim" data-rv style="--i:4"><code>S3–S4</code><span>供审核评论 / 供阶段批准</span></div>
+        <div class="stcode a1" data-rv style="--i:5"><code>A1</code><span><b>Authorized for Construction —— 批准用于施工 ✓</b></span></div>
+        <div class="stcode" data-rv style="--i:6"><code>AB</code><span>As-Built 竣工版 · 用于移交</span></div>
+      </div>
+    </div>
+    <div class="banner" data-rv style="--i:7">图纸本身<b>自带授权信息</b>，现场不会误用 —— 解决"给你看看"还是"照着干"靠口头确认的常见纠纷。个人认为<b>最值得移植</b>的一条。</div>
+  </div>
+</section>
+
+<!-- S11 Transmittal -->
+<section class="slide" data-section="PART 02 · DCP 规范要点" data-title="提交与审批流程">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">2.7 · TRANSMITTAL & RETURN CODE</div>
+    <h2 class="title" data-rv style="--i:1">每一次文件往来，<em>必须有一张提交单</em></h2>
+    <div class="flow" data-rv style="--i:2">
+      <div class="fnode"><h4>编制 / 校核 / 批准</h4><p>Author → Checker → Approver 三段式</p></div>
+      <div class="farr">→</div>
+      <div class="fnode cy"><h4>Transmittal 提交单</h4><p>编号 · 文件清单 · 版次状态 · 目的 · 回复期限</p></div>
+      <div class="farr">→</div>
+      <div class="fnode"><h4>业主 / 监理审批</h4><p>图纸 14 个日历天 · 方案 21 天</p></div>
+      <div class="farr">→</div>
+      <div class="fnode"><h4>回复代码归档</h4><p>EDMS 平台自动时间戳 + 审计轨迹</p></div>
+    </div>
+    <div class="rcodes">
+      <div class="rcode a" data-rv style="--i:3"><div class="c">A</div><h4>批准</h4><p>可按此施工</p></div>
+      <div class="rcode b" data-rv style="--i:4"><div class="c">B</div><h4>附意见批准</h4><p>按意见修改，不需重报</p></div>
+      <div class="rcode c" data-rv style="--i:5"><div class="c">C</div><h4>修改后重报</h4><p>必须重报，不得施工</p></div>
+      <div class="rcode d" data-rv style="--i:6"><div class="c">D</div><h4>否决</h4><p>方案性问题，重做</p></div>
+    </div>
+    <div class="chips" data-rv style="--i:7">
+      <span class="chip gd">超期未回复视为默认批准 —— 对承包商的保护</span>
+      <span class="chip cy">平台时间戳 + 审计轨迹 = 索赔时最硬的证据</span>
+    </div>
+  </div>
+</section>
+
+<!-- S12 DC 岗位 -->
+<section class="slide" data-section="PART 02 · DCP 规范要点" data-title="Document Controller 岗位">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">2.2 · DOCUMENT CONTROLLER</div>
+    <h2 class="title" data-rv style="--i:1">DC 是一个<em>独立岗位</em>，不是资料员兼任</h2>
+    <div class="banner cy" data-rv style="--i:2">核心原则：文件的收、发、登记、催办，必须由<b>独立于编制人的第三方</b>执行 —— 谁编制，谁就不能自己登记发布，否则台账必然失真。</div>
+    <div class="flow" data-rv style="--i:3">
+      <div class="fnode"><h4>Author 编制人</h4><p>编制文件 · 按规范命名 · 提交登记<br>不得自行对外发送</p></div>
+      <div class="farr">→</div>
+      <div class="fnode"><h4>Checker 校核人</h4><p>技术复核<br>与编制人不得为同一人</p></div>
+      <div class="farr">→</div>
+      <div class="fnode"><h4>Approver 批准人</h4><p>授权签发<br>按授权矩阵，超权限不得签</p></div>
+      <div class="farr">→</div>
+      <div class="fnode cy"><h4>Document Controller</h4><p>编号发放 · 台账登记 · 版本控制<br>收发传递 · 催办 · 归档</p></div>
+    </div>
+    <div class="split" style="align-items:stretch">
+      <div class="card" data-rv style="--i:4"><h3>配备建议</h3><p><b style="color:var(--cy)">1 名专职 DC ＋ 各专业 1 名兼职文档联络员</b>。30 亿级项目 1 名专职完全必要；中小项目可 1 人兼管 2～3 个项目。</p></div>
+      <div class="card gold" data-rv style="--i:5"><h3>为什么值得</h3><p>真正"贵"的不是 NAS，而是 DC 这个岗位 —— 它恰恰是香港体系<b>最核心</b>的部分。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S13 DIVIDER 03 -->
+<section class="slide divider" data-section="PART 03 · 管理效益" data-title="第三部分 · 管理效益">
+  <div class="wrap">
+    <div class="giant" data-n="03" data-rv style="--i:0">03</div>
+    <div class="dv-body">
+      <div class="kicker" data-rv style="--i:1">PART 03 · VALUE</div>
+      <h2 class="dv-title" data-rv style="--i:2">管理效益</h2>
+      <p class="lead" data-rv style="--i:3">这套东西值多少钱？不做的代价是什么？</p>
+      <div class="secmap" data-rv style="--i:4"><span>01 背景</span><span>02 要点</span><span class="on">03 效益</span><span>04 推行</span><span>05 NAS</span><span>06 计划</span><span>07 决策</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S14 六项效益 -->
+<section class="slide" data-section="PART 03 · 管理效益" data-title="六项直接效益">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">SIX BENEFITS</div>
+    <h2 class="title" data-rv style="--i:1">六项直接效益，<em>说到可感知的层面</em></h2>
+    <div class="grid g3">
+      <div class="card gold" data-rv style="--i:2"><h3><span class="num-badge">1</span>可追溯性</h3><p>争议时的证据链：哪天发、第几版、谁签收、对方哪天回、回的什么代码 —— 证据在平台里，不在人的记忆里。<b style="color:var(--gd)">一次成功索赔，即可覆盖整个体系投入。</b></p></div>
+      <div class="card" data-rv style="--i:3"><h3><span class="num-badge">2</span>减少无效返工</h3><p>状态码（S2 仅供参考 vs A1 批准施工）直接切断"用了旧版图纸"这一返工源头。</p></div>
+      <div class="card" data-rv style="--i:4"><h3><span class="num-badge">3</span>支撑索赔与 EOT</h3><p>事件、影响、因果三要素全靠文件时间线。台账混乱的项目，即使占理也拿不出证据。</p></div>
+      <div class="card" data-rv style="--i:5"><h3><span class="num-badge">4</span>迎检成本极低</h3><p>内审、上级检查、ISO 9001、档案验收 —— 台账一拉就有，不再"突击整理资料"。</p></div>
+      <div class="card" data-rv style="--i:6"><h3><span class="num-badge">5</span>竣工移交效率</h3><p>移交是结算前置条件：移交拖一个月，结算就拖一个月，资金成本就在那里。</p></div>
+      <div class="card" data-rv style="--i:7"><h3><span class="num-badge">6</span>知识资产沉淀</h3><p>后来者三天搞清一个站的历史，而不是找三个人问两周 —— 这是企业能力，不是个人能力。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S15 61号令 -->
+<section class="slide" data-section="PART 03 · 管理效益" data-title="61号令 · 政策窗口 ★">
+  <div class="wrap" style="gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="kicker" data-rv style="--i:0">POLICY WINDOW · 政策窗口</div>
+      <span class="tag" data-rv style="--i:1">★ 建议领导重点关注</span>
+    </div>
+    <h2 class="title" data-rv style="--i:1">61 号令 —— 从"软要求"变成<em>"硬约束"</em></h2>
+    <div class="split split-45" style="align-items:center">
+      <div data-rv style="--i:2" style="text-align:center">
+        <div class="big61">61</div>
+        <p class="mono" style="font-size:12px;color:var(--gd);letter-spacing:.14em;margin-top:6px">《城市建设档案管理规定》</p>
+        <p style="font-size:12px;color:var(--mt);margin-top:8px;line-height:1.9">住建部 · 国家档案局令第 61 号<br>2026-04-20 公布 · <b style="color:var(--tx)">2026-09-01 施行</b> · 共 7 章 33 条</p>
+      </div>
+      <div class="kv">
+        <div class="card" data-rv style="--i:3"><h3>归档与施工进度同步</h3><p>禁止"完工后集中补资料"，必须从开工就管</p></div>
+        <div class="card" data-rv style="--i:4"><h3>档案验收 = 竣工备案前置</h3><p>档案不合格 ⇒ 无法竣工备案 ⇒ 无法结算</p></div>
+        <div class="card" data-rv style="--i:5"><h3>电子档案同等法律效力</h3><p>电子文件管理不再是"辅助"，是法定载体</p></div>
+        <div class="card" data-rv style="--i:6"><h3>BIM 纳入法定移交范围</h3><p>模型文件必须受控存储和版本管理</p></div>
+        <div class="card" data-rv style="--i:7"><h3>线上归集 · 异地异质备份</h3><p>直接对应第五部分 NAS + 备份方案</p></div>
+        <div class="card" data-rv style="--i:8"><h3>档案费用列入工程造价</h3><p>有合法费用来源，不是"额外负担"</p></div>
+      </div>
+    </div>
+    <div class="banner" data-rv style="--i:9" style="justify-content:center;font-size:16px">我们现在推进文件控制体系，<b>不是在"学香港"，而是在落实国家新规</b> —— 这是本次汇报最有力的一句话。</div>
+  </div>
+</section>
+
+<!-- S16 DIVIDER 04 -->
+<section class="slide divider" data-section="PART 04 · 内地推行" data-title="第四部分 · 内地推行">
+  <div class="wrap">
+    <div class="giant" data-n="04" data-rv style="--i:0">04</div>
+    <div class="dv-body">
+      <div class="kicker" data-rv style="--i:1">PART 04 · ROLLOUT</div>
+      <h2 class="dv-title" data-rv style="--i:2">内地推行：差异、依据与路径</h2>
+      <p class="lead" data-rv style="--i:3">最容易翻车的地方在哪里，就怎么设计。</p>
+      <div class="secmap" data-rv style="--i:4"><span>01 背景</span><span>02 要点</span><span>03 效益</span><span class="on">04 推行</span><span>05 NAS</span><span>06 计划</span><span>07 决策</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S17 两地差异 -->
+<section class="slide" data-section="PART 04 · 内地推行" data-title="两地制度差异">
+  <div class="wrap" style="gap:14px">
+    <div class="kicker" data-rv style="--i:0">4.1 · GAP ANALYSIS</div>
+    <h2 class="title" data-rv style="--i:1">香港是"<em>过程强制</em>"，内地是"<em style="background:linear-gradient(100deg,var(--gd),#D89B3F);-webkit-background-clip:text;background-clip:text">结果验收</em>"</h2>
+    <div class="vs" data-rv style="--i:2">
+      <div class="side hk"><h4>香港 · 港铁体系 —— 过程强制</h4><p>合同强制条款 · 专职 DC · 字段化命名 · Transmittal 提交单 · 统一 EDMS · 业主定期审计</p></div>
+      <div class="x">VS</div>
+      <div class="side ml"><h4>内地 · 现状 —— 结果验收</h4><p>内部制度 · 资料员兼任 · 命名各自为政 · 口头/微信/邮件混杂 · 靠档案专项验收（事后）</p></div>
+    </div>
+    <table class="tbl" data-rv style="--i:3">
+      <tr><th>维度</th><th>香港（港铁体系）</th><th>内地现状</th><th>推行难度</th></tr>
+      <tr><td>岗位设置</td><td>专职 Document Controller</td><td>资料员兼任，流动大</td><td><span class="bdg mh">中高 · 需定编</span></td></tr>
+      <tr><td>命名与版次</td><td>字段化 + 受控编号 + 状态码</td><td>无统一要求，靠人工判"最新版"</td><td><span class="bdg md">中 · 改习惯</span></td></tr>
+      <tr><td>审批载体</td><td>Transmittal 提交单</td><td>口头 / 微信 / 邮件混杂</td><td><span class="bdg hi">高 · 改流程</span></td></tr>
+      <tr><td>归档要求</td><td>业主要求为主</td><td>城建档案馆 + 行业标准，要求更细</td><td><span class="bdg hi">高 · 双体系</span></td></tr>
+    </table>
+    <div class="banner cy" data-rv style="--i:4">61 号令要求"归档与施工同步" —— 正在把内地也推向<b>过程强制</b>，这个差别正在补上。</div>
+  </div>
+</section>
+
+<!-- S18 双轨并行 -->
+<section class="slide" data-section="PART 04 · 内地推行" data-title="关键矛盾 · 双轨并行">
+  <div class="wrap" style="gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="kicker" data-rv style="--i:0">4.3 · KEY DESIGN</div>
+      <span class="tag" data-rv style="--i:1">★ 最容易翻车的地方 · 请领导特别关注</span>
+    </div>
+    <h2 class="title" data-rv style="--i:1">工程命名 vs 档案编号 —— <em>双轨并行，一次生成</em></h2>
+    <div class="vs" data-rv style="--i:2">
+      <div class="side hk"><h4>施工期 · 项目部自用</h4><p>讲究快、好找 —— 用字段化编码命名</p></div>
+      <div class="x">⇄</div>
+      <div class="side ml"><h4>竣工期 · 移交城建档案馆</h4><p>讲究合规、可组卷 —— 用档案分类号 / 案卷号 / 件号</p></div>
+    </div>
+    <div class="banner red" data-rv style="--i:3">两套体系各自为政 ⇒ 施工期一套命名，竣工前<b>全部推倒重来</b> —— 这正是 61 号令明令禁止的"完工后集中补资料"的根源。</div>
+    <div class="card cy" data-rv style="--i:4">
+      <h3>解决方案：一次生成，日常即归档</h3>
+      <p>① 文件名用<b style="color:var(--cy)">字段化编码</b>（便于检索排序）　② 文件登记册增设<b style="color:var(--cy)">"档案分类号 · 案卷号 · 件号"三列</b>，DC 登记时同步填写　③ 竣工时按登记册三列<b style="color:var(--cy)">自动组卷</b>，无需重新编号</p>
+    </div>
+    <div class="banner" data-rv style="--i:5" style="justify-content:center;font-size:15.5px"><b>归档工作在日常就完成了 90%，竣工只剩整理和装订</b> —— 本次推行方案最大的技术价值点。</div>
+  </div>
+</section>
+
+<!-- S19 三步走 -->
+<section class="slide" data-section="PART 04 · 内地推行" data-title="推行路径 · 三步走">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0">4.4 · ROADMAP</div>
+    <h2 class="title" data-rv style="--i:1">推行路径 —— <em>三步走</em></h2>
+    <div class="steps">
+      <div class="step" data-rv style="--i:2"><div class="dot">1</div><div class="card" style="height:100%"><h3>试点 <span class="mono" style="font-size:11px;color:var(--cy)">第 1–6 月</span></h3><p>选 1～2 个新开工项目；配 DC、搭 NAS、发布项目级 DCP；跑通命名、版次、提交单三件事<br><br><b style="color:var(--cy)">标志：3 个月后文件合规率 ≥ 90%</b></p></div></div>
+      <div class="step" data-rv style="--i:3"><div class="dot">2</div><div class="card" style="height:100%"><h3>成制度 <span class="mono" style="font-size:11px;color:var(--cy)">第 7–12 月</span></h3><p>总结试点经验，编制公司级《建设工程文件控制管理办法》、编码命名规则、登记册与提交单表单；纳入项目部考核<br><br><b style="color:var(--cy)">标志：公司发文</b></p></div></div>
+      <div class="step" data-rv style="--i:4"><div class="dot">3</div><div class="card" style="height:100%"><h3>全覆盖 <span class="mono" style="font-size:11px;color:var(--cy)">第 13 月起</span></h3><p>新开工项目一律执行；纳入分包合同附件；纳入月度检查<br><br><b style="color:var(--cy)">标志：新项目 100% 覆盖</b></p></div></div>
+    </div>
+    <div class="chips" data-rv style="--i:5">
+      <span class="chip gd">关键动作 ① 定编 —— 岗位到人，不能"谁有空谁干"</span>
+      <span class="chip gd">② 发文 —— 正式制度，不是部门通知</span>
+      <span class="chip gd">③ 进考核 —— 与绩效挂钩</span>
+    </div>
+    <div class="banner red" data-rv style="--i:6">三件缺一不可。经验判断：<b>最容易漏的是第三件</b>，而它恰恰是唯一能保证不空转的一件。</div>
+  </div>
+</section>
+
+<!-- S20 DIVIDER 05 -->
+<section class="slide divider" data-section="PART 05 · NAS 平台" data-title="第五部分 · NAS 平台">
+  <div class="wrap">
+    <div class="giant" data-n="05" data-rv style="--i:0">05</div>
+    <div class="dv-body">
+      <div class="kicker" data-rv style="--i:1">PART 05 · NAS PLATFORM</div>
+      <h2 class="dv-title" data-rv style="--i:2">NAS 协同办公平台</h2>
+      <p class="lead" data-rv style="--i:3">制度定规则，NAS 保执行 —— DCP 文件夹结构的物理实现。</p>
+      <div class="secmap" data-rv style="--i:4"><span>01 背景</span><span>02 要点</span><span>03 效益</span><span>04 推行</span><span class="on">05 NAS</span><span>06 计划</span><span>07 决策</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S21 为什么 NAS + 架构 -->
+<section class="slide" data-section="PART 05 · NAS 平台" data-title="为什么是 NAS ＋ 架构">
+  <div class="wrap" style="gap:14px">
+    <div class="kicker" data-rv style="--i:0">5.1 / 5.2 · WHY NAS & ARCHITECTURE</div>
+    <h2 class="title" data-rv style="--i:1">为什么是 NAS —— <em>唯一数据源</em>，人走文件留</h2>
+    <div class="split split-58" style="align-items:center">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <ul class="rows" data-rv style="--i:2" style="gap:10px">
+          <li>文件在个人电脑和 U 盘里，人走文件走 ⇒ <b>集中存储 · 权限管理，人走文件留</b></li>
+          <li>微信传文件，版本满天飞 ⇒ <b>唯一数据源 Single Source of Truth</b></li>
+          <li>项目部与公司机关不通 ⇒ <b>内外网统一入口，远程访问</b></li>
+          <li>误删、勒索病毒、硬盘损坏 ⇒ <b>快照 + 回收站 + 定期备份</b></li>
+        </ul>
+        <div class="card gold" data-rv style="--i:3"><h3>成本量级</h3><p>项目部级一套（4 盘位 + 企业级硬盘）约 <b style="color:var(--gd)">1～1.5 万元</b>，覆盖面是全项目所有技术文件。</p></div>
+        <div class="banner cy" data-rv style="--i:4" style="font-size:12.5px;padding:11px 16px">主 NAS 在项目部，备份 NAS 在机关 / 异地 —— 直接对应 61 号令<b>"异地异质备份"</b>。</div>
+      </div>
+      <div class="arch" data-rv style="--i:3">
+        <div class="anode hq"><h4>公司机关（北京）</h4><p>文件控制中心 / 备份中心</p></div>
+        <div class="alink"><span class="lbl">VPN / 专线</span></div>
+        <div class="anode"><h4>项目部 NAS（主）</h4><p>文件共享 · 权限控制 · 快照与版本</p></div>
+        <div class="alink"><span class="lbl">每日增量同步</span></div>
+        <div class="anode bk"><h4>备份 NAS（异地 / 机关）</h4><p>快照复制 · 离线归档</p></div>
+        <div class="alink" style="height:26px"></div>
+        <div class="fan"><span>现场办公电脑</span><span>移动端 / 笔记本</span><span>扫描打印一体机</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S22 权限与备份 -->
+<section class="slide" data-section="PART 05 · NAS 平台" data-title="权限模型 ＋ 备份 3-2-1">
+  <div class="wrap" style="gap:14px">
+    <div class="kicker" data-rv style="--i:0">5.4 / 5.6 · PERMISSION & BACKUP</div>
+    <h2 class="title" data-rv style="--i:1">最小权限 · <em>3-2-1 备份</em></h2>
+    <div class="split" style="align-items:start">
+      <div>
+        <table class="tbl" data-rv style="--i:2">
+          <tr><th>用户组</th><th>权限要点</th></tr>
+          <tr><td>Document Controller</td><td>全部读写 ＋ <b style="color:var(--cy)">登记册独写</b>（唯一台账权限）</td></tr>
+          <tr><td>项目经理</td><td>全目录读写（99 与登记册只读，保留审计独立性）</td></tr>
+          <tr><td>专业工程师</td><td>本专业子目录读写，其他只读，防跨专业误改</td></tr>
+          <tr><td>分包单位</td><td>仅指定子目录，<b style="color:var(--rd)">严禁访问其他单位文件</b></td></tr>
+          <tr><td>公司机关 / 离职</td><td>全部只读 ／ 离职当天禁用账号</td></tr>
+        </table>
+        <div class="chips" data-rv style="--i:3" style="margin-top:12px"><span class="chip cy">一人一号</span><span class="chip cy">离职即停</span><span class="chip cy">季度清理</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="grid g3" data-rv style="--i:2">
+          <div class="metric" style="padding:16px;text-align:center"><div class="n" style="justify-content:center"><span class="num" data-to="3">0</span></div><div class="l">份数据副本</div></div>
+          <div class="metric" style="padding:16px;text-align:center"><div class="n" style="justify-content:center"><span class="num" data-to="2">0</span></div><div class="l">种不同介质</div></div>
+          <div class="metric" style="padding:16px;text-align:center"><div class="n" style="justify-content:center"><span class="num" data-to="1">0</span></div><div class="l">份异地存放</div></div>
+        </div>
+        <div class="banner red" data-rv style="--i:3" style="font-size:12.5px;padding:11px 16px"><b>RAID ≠ 备份！</b>RAID 只防"硬盘坏"，不防误删、病毒加密、火灾、整机被盗。</div>
+        <div class="card" data-rv style="--i:4" style="padding:14px 18px"><p style="font-size:12.5px">RAID 6 ＋热备 → 每日快照（留 30–90 天）→ 异地快照复制 → 移动硬盘冷备 → 竣工定版归档（只读双份）<br><b style="color:var(--cy)">每半年一次恢复演练</b> —— 备份有没有用，只有恢复过才知道。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S23 边界与局限 -->
+<section class="slide" data-section="PART 05 · NAS 平台" data-title="边界与局限（诚实说明）">
+  <div class="wrap" style="gap:14px">
+    <div class="kicker" data-rv style="--i:0">5.9 · HONEST LIMITS</div>
+    <h2 class="title" data-rv style="--i:1">已知局限 —— <em>提前讲清，避免推广翻车</em></h2>
+    <div class="banner" data-rv style="--i:2" style="align-items:flex-start"><b style="flex:none">⚠ 最关键的一条：</b><span>NAS 的"版本历史"≠"协同编辑" —— 只能回退旧版，<b>不能两人同时编辑并自动合并</b>。多人同时编辑 ⇒ 在线云文档（纪要 / 台账 / 清单）；正式受控文件 ⇒ 存 NAS，<b>一人编辑、他人只读</b>。</span></div>
+    <div class="grid g2" style="gap:12px">
+      <div class="card" data-rv style="--i:3" style="padding:14px 18px"><h3 style="font-size:14px">外网访问速度受限</h3><p>分级存储；竣工资料本地归档后再同步</p></div>
+      <div class="card" data-rv style="--i:4" style="padding:14px 18px"><h3 style="font-size:14px">依赖网络 · 不是零管理</h3><p>项目部局域网内可用；DC 兼任系统管理员</p></div>
+      <div class="card" data-rv style="--i:5" style="padding:14px 18px"><h3 style="font-size:14px">不替代档案系统</h3><p>是工作平台；竣工按登记册导出组卷，移交档案馆</p></div>
+      <div class="card red" data-rv style="--i:6" style="padding:14px 18px"><h3 style="font-size:14px">央企采购合规</h3><p>台系品牌（群晖 / 威联通）需合规评估，<b style="color:var(--rd)">建议优先国产 NAS</b>，报批时同步说明</p></div>
+    </div>
+    <p class="lead" data-rv style="--i:7" style="text-align:center">边界提前讲清楚，否则推广后现场会说"买了 NAS 还是不能一起改文件"。</p>
+  </div>
+</section>
+
+<!-- S24 实施计划 -->
+<section class="slide" data-section="PART 06 · 实施计划" data-title="实施计划 · 路线图">
+  <div class="wrap" style="gap:14px">
+    <div class="kicker" data-rv style="--i:0">PART 06 · IMPLEMENTATION</div>
+    <h2 class="title" data-rv style="--i:1">实施计划 —— <em>四阶段路线图</em></h2>
+    <div class="steps steps4">
+      <div class="step" data-rv style="--i:2"><div class="dot">1</div><div class="card" style="height:100%;padding:16px 18px"><h3 style="font-size:14px">准备期 <span class="mono" style="font-size:10.5px;color:var(--cy)">第 1 月</span></h3><p>成立工作小组 · 调研选型 · 确定试点<br><b style="color:var(--cy)">安质部牵头</b></p></div></div>
+      <div class="step" data-rv style="--i:3"><div class="dot">2</div><div class="card" style="height:100%;padding:16px 18px"><h3 style="font-size:14px">试点期 <span class="mono" style="font-size:10.5px;color:var(--cy)">第 2–7 月</span></h3><p>NAS 采购部署 · 项目级 DCP · 配 DC · 培训试运行<br><b style="color:var(--cy)">试点项目部</b></p></div></div>
+      <div class="step" data-rv style="--i:4"><div class="dot">3</div><div class="card" style="height:100%;padding:16px 18px"><h3 style="font-size:14px">总结期 <span class="mono" style="font-size:10.5px;color:var(--cy)">第 8–10 月</span></h3><p>效果评估 · 公司级制度与表单<br><b style="color:var(--cy)">安质部 ＋ 工程部</b></p></div></div>
+      <div class="step" data-rv style="--i:5"><div class="dot">4</div><div class="card" style="height:100%;padding:16px 18px"><h3 style="font-size:14px">推广期 <span class="mono" style="font-size:10.5px;color:var(--cy)">第 11 月起</span></h3><p>发文 · 新项目全覆盖 · 纳入考核<br><b style="color:var(--cy)">安质部</b></p></div></div>
+    </div>
+    <div class="chips" data-rv style="--i:6">
+      <span class="chip">试点优选：工期 2 年+ · 文件量大 · 意愿强 · 离机关近；不选收尾项目</span>
+    </div>
+    <div class="banner red" data-rv style="--i:7" style="font-size:12.5px">风险前三：形式主义执行 ⇒ <b>纳入考核＋驻场辅导</b>；DC 不到位 ⇒ <b>定编定岗 · AB 角</b>；与档案馆要求不一致 ⇒ <b>试点前主动对接（关键前置动作）</b>。</div>
+  </div>
+</section>
+
+<!-- S25 决策四件事 -->
+<section class="slide" data-section="PART 07 · 决策事项" data-title="请领导决策的四件事 ★">
+  <div class="wrap">
+    <div class="kicker" data-rv style="--i:0" style="color:var(--gd)">PART 07 · DECISIONS NEEDED</div>
+    <h2 class="title" data-rv style="--i:1">请领导决策的<em style="background:linear-gradient(100deg,var(--gd),#D89B3F);-webkit-background-clip:text;background-clip:text">四件事</em></h2>
+    <div class="dcards">
+      <div class="dcard" data-rv style="--i:2"><div class="dn">01</div><h3>是否同意立项推进</h3><p>"文件控制体系 ＋ NAS 协同办公"<b>作为一个整体项目</b>推进；安全质量环保部牵头，工程管理部、技术中心配合。</p></div>
+      <div class="dcard" data-rv style="--i:3"><div class="dn">02</div><h3>确定试点项目</h3><p>圈定 <b>1～2 个新开工项目</b>作为试点，试点周期 6 个月，给予人员和费用支持。</p></div>
+      <div class="dcard" data-rv style="--i:4"><div class="dn">03</div><h3>明确编制与经费</h3><p>DC 岗位<b>按项目管理岗位定编</b>（不占资料员编制）；NAS 及备份投入依 61 号令<b>列入工程造价</b>。</p></div>
+      <div class="dcard" data-rv style="--i:5"><div class="dn">04</div><h3>同意发文与考核</h3><p>试点成功后以<b>公司名义</b>印发《建设工程文件控制管理办法》，纳入项目部<b>月度检查考核</b>。</p></div>
+    </div>
+    <p class="lead" data-rv style="--i:6" style="text-align:center;letter-spacing:.1em">以上四项，恳请领导审议决策。</p>
+  </div>
+</section>
+
+<!-- S26 CLOSING -->
+<section class="slide" data-section="CLOSING · 结束" data-title="结束页">
+  <div class="wrap" style="align-items:center;text-align:center;gap:34px">
+    <div class="quote" data-rv style="--i:1">
+      <p>"我建议不铺开，<em>先选一个项目，试 6 个月</em>。<br>成了，我们有制度可发；不成，只损失一个项目的试点成本。"</p>
+    </div>
+    <div class="thanks" data-rv style="--i:2">谢谢聆听 · 请领导指示</div>
+    <div class="chips" data-rv style="--i:3" style="justify-content:center">
+      <span class="chip cy">安全质量环保部 · 巩 略</span>
+      <span class="chip">2026 年 10 月</span>
+      <span class="chip">内部汇报 · 建议稿</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" aria-label="上一页">←</button>
+  <div class="counter"><b id="cnum">01</b> / <span id="ctotal">26</span></div>
+  <button class="nav-btn" id="gridBtn" aria-label="目录">▦</button>
+  <button class="nav-btn" id="nextBtn" aria-label="下一页">→</button>
+</nav>
+<div class="hint">← → 切换 · O 目录 · F 全屏</div>
+
+<div class="ov" id="ov">
+  <div class="ov-box">
+    <h3>SLIDE INDEX · 点击跳转（ESC 关闭）</h3>
+    <div class="ov-grid" id="ovGrid"></div>
+  </div>
+</div>
+
+<script>
+/* ============ SLIDE ENGINE ============ */
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;
+const pfill=document.getElementById('pfill'),cnum=document.getElementById('cnum'),
+      ctotal=document.getElementById('ctotal'),seclbl=document.getElementById('seclbl'),
+      beam=document.getElementById('beam');
+ctotal.textContent=String(slides.length).padStart(2,'0');
+
+function playNums(sl){
+  sl.querySelectorAll('.num[data-to]').forEach(el=>{
+    cancelAnimationFrame(el._r);
+    const to=parseFloat(el.dataset.to),dec=+(el.dataset.dec||0),dur=1500,t0=performance.now();
+    const step=t=>{const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,4);
+      el.textContent=(to*e).toFixed(dec);
+      if(p<1)el._r=requestAnimationFrame(step);};
+    el._r=requestAnimationFrame(step);
+  });
+}
+function fireBeam(){beam.classList.remove('run');void beam.offsetWidth;beam.classList.add('run');}
+function render(){
+  slides.forEach((s,i)=>{
+    const a=i===cur;
+    s.classList.toggle('active',a);
+    s.classList.toggle('is-before',i<cur);
+    if(!a)s.querySelectorAll('.num[data-to]').forEach(el=>{cancelAnimationFrame(el._r);el.textContent=(0).toFixed(+(el.dataset.dec||0));});
+  });
+  pfill.style.width=((cur+1)/slides.length*100)+'%';
+  cnum.textContent=String(cur+1).padStart(2,'0');
+  seclbl.textContent=slides[cur].dataset.section||'';
+  history.replaceState(null,'','#'+(cur+1));
+  playNums(slides[cur]);
+  fireBeam();
+}
+function go(n){n=Math.max(0,Math.min(slides.length-1,n));if(n===cur)return;cur=n;render();}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+
+document.getElementById('nextBtn').onclick=e=>{e.stopPropagation();next();};
+document.getElementById('prevBtn').onclick=e=>{e.stopPropagation();prev();};
+
+document.addEventListener('keydown',e=>{
+  if(ovOpen&&(e.key==='Escape'||e.key.toLowerCase()==='o')){toggleOv(false);e.preventDefault();return;}
+  if(ovOpen)return;
+  switch(e.key){
+    case'ArrowRight':case' ':case'PageDown':e.preventDefault();next();break;
+    case'ArrowLeft':case'PageUp':e.preventDefault();prev();break;
+    case'Home':e.preventDefault();go(0);break;
+    case'End':e.preventDefault();go(slides.length-1);break;
+  }
+  const k=e.key.toLowerCase();
+  if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}
+  if(k==='o')toggleOv(true);
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('.nav,.ov,button,a'))return;
+  const x=e.clientX/innerWidth;
+  x<0.18?prev():next();
+});
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy))dx<0?next():prev();
+},{passive:true});
+
+/* ============ OVERVIEW ============ */
+const ov=document.getElementById('ov'),ovGrid=document.getElementById('ovGrid');
+let ovOpen=false;
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='ov-item';
+  b.innerHTML='<span class="ov-num">'+String(i+1).padStart(2,'0')+'</span><span>'+(s.dataset.title||'')+'</span>';
+  b.onclick=()=>{toggleOv(false);go(i);};
+  ovGrid.appendChild(b);
+});
+function toggleOv(v){ovOpen=v===undefined?!ovOpen:v;ov.classList.toggle('open',ovOpen);}
+document.getElementById('gridBtn').onclick=e=>{e.stopPropagation();toggleOv();};
+ov.addEventListener('click',e=>{if(e.target===ov)toggleOv(false);});
+
+/* ============ PARTICLE BACKGROUND ============ */
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+  let W,H,pts=[];const dpr=Math.min(devicePixelRatio||1,2);
+  function resize(){
+    W=innerWidth;H=innerHeight;
+    cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+    cx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.min(85,Math.floor(W*H/26000));
+    pts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.5+.5}));
+  }
+  resize();addEventListener('resize',resize);
+  const LINK=125;
+  (function loop(){
+    cx.clearRect(0,0,W,H);
+    for(const p of pts){
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);
+      cx.fillStyle='rgba(110,190,255,.5)';cx.fill();
+    }
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;
+      if(d<LINK*LINK){
+        cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);
+        cx.strokeStyle='rgba(80,150,255,'+(0.10*(1-d/(LINK*LINK))).toFixed(3)+')';
+        cx.lineWidth=1;cx.stroke();
+      }
+    }
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ============ INIT ============ */
+const h=parseInt((location.hash||'').slice(1),10);
+if(h>=1&&h<=slides.length)cur=h-1;
+render();
+</script>
+</body>
+</html>
